@@ -1,0 +1,749 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Công cụ tham khảo thông số khởi đầu cho máy thở Neumovent GraphNet. Chỉ dành cho người lớn. Không thay thế phán đoán lâm sàng.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vent Assist">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu</title>
+<style>
+  /* Phiên bản 1.0.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #0b1220;
+    --line: #475569;
+    --text: #f8fafc;
+    --muted: #cbd5e1;
+    --blue: #0284c7;
+    --blue-light: #38bdf8;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 12px; }
+
+  h1 { font-size: 1.35rem; margin: 8px 0 4px; line-height: 1.25; }
+  h2 { font-size: 1.1rem; margin: 0 0 10px; color: var(--blue-light); text-transform: uppercase; letter-spacing: .04em; }
+  h3 { font-size: 1.05rem; margin: 12px 0 6px; }
+
+  p { margin: 6px 0; }
+  ul { margin: 6px 0; padding-left: 1.25rem; }
+  li { margin: 4px 0; }
+
+  .muted { color: var(--muted); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .disclaimer {
+    background: #422006;
+    border: 2px solid var(--amber);
+    color: #fef3c7;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 12px 0;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    min-height: 64px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: var(--panel);
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    touch-action: manipulation;
+  }
+
+  button:focus-visible, input:focus-visible {
+    outline: 4px solid var(--amber);
+    outline-offset: 2px;
+  }
+
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-opt[aria-pressed="true"] {
+    background: var(--blue);
+    border-color: var(--blue-light);
+    color: #ffffff;
+  }
+
+  .btn-sc { text-align: left; min-height: 76px; }
+  .btn-sc small { display: block; font-weight: 500; font-size: .9rem; color: var(--muted); }
+  .btn-sc[aria-pressed="true"] {
+    background: var(--green);
+    border-color: #6ee7b7;
+    color: #022c22;
+  }
+  .btn-sc[aria-pressed="true"] small { color: #064e3b; }
+
+  .height-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+  .height-value {
+    font-size: clamp(2.6rem, 12vw, 4rem);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 56px;
+    margin: 10px 0 4px;
+    accent-color: var(--blue);
+  }
+
+  input[type="number"] {
+    font: inherit;
+    font-size: 1.4rem;
+    font-weight: 700;
+    width: 100%;
+    min-height: 56px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 2px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .ibw-line { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .ibw-value {
+    font-size: clamp(2.2rem, 10vw, 3.2rem);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    color: var(--green);
+  }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .result {
+    background: var(--panel-2);
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+  }
+  .result .label { font-size: .95rem; font-weight: 700; color: var(--muted); }
+  .result .big {
+    font-size: clamp(2.4rem, 11vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    color: #ffffff;
+  }
+  .result .unit { font-size: 1rem; font-weight: 700; color: var(--muted); }
+  .result .sub { font-size: .9rem; color: var(--muted); }
+  .result.wide { grid-column: 1 / -1; }
+
+  .result.vt .big { color: var(--green); }
+  .result.peep .big { color: var(--blue-light); }
+
+  .notes { list-style: none; padding: 0; margin: 0; }
+  .notes li {
+    background: var(--panel-2);
+    border-left: 4px solid var(--amber);
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin: 8px 0;
+  }
+
+  .alert {
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 700;
+    margin: 10px 0;
+  }
+  .alert-red { background: #7f1d1d; color: #ffffff; border: 2px solid var(--red); }
+  .alert-amber { background: #78350f; color: #ffffff; border: 2px solid var(--amber); }
+  .alert-blue { background: #0c4a6e; color: #ffffff; border: 2px solid var(--blue-light); }
+
+  .hint { font-size: .95rem; font-weight: 600; min-height: 1.4em; margin: 4px 0 12px; color: var(--muted); }
+  .hint-ok { color: var(--green); }
+  .hint-amber { color: var(--amber); }
+  .hint-red { color: var(--red); }
+
+  .tag {
+    display: inline-block;
+    font-size: .8rem;
+    font-weight: 700;
+    background: #334155;
+    color: #fde68a;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .emergency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .emergency-grid button { min-height: 72px; }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, .94);
+    overflow-y: auto;
+    z-index: 10;
+    padding: env(safe-area-inset-top, 0px) 10px env(safe-area-inset-bottom, 0px);
+  }
+  .modal[hidden] { display: none; }
+  .modal-body {
+    background: var(--panel);
+    max-width: 680px;
+    margin: 16px auto;
+    padding: 18px;
+    border-radius: 16px;
+    border: 2px solid var(--line);
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .modal-head h2 { margin: 0; }
+  .close-btn { min-height: 56px; padding: 8px 16px; background: var(--blue); border-color: var(--blue-light); color: #fff; }
+
+  footer { margin: 18px 0 30px; font-size: .9rem; color: var(--muted); }
+
+  @media (max-width: 440px) {
+    .result-grid, .btn-row, .emergency-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu</h1>
+    <p class="muted">Emergency Vent Assist · Neumovent GraphNet · Người lớn</p>
+  </header>
+
+  <div class="disclaimer" role="note">
+    Chỉ là gợi ý khởi đầu. Không thay thế phán đoán lâm sàng và hướng dẫn nhà sản xuất. Kiểm tra lại trên máy thực tế trước khi áp dụng.
+  </div>
+
+  <main>
+
+    <!-- BƯỚC 1: NHÓM BỆNH NHÂN -->
+    <section class="card" aria-labelledby="h-group">
+      <h2 id="h-group">1. Nhóm bệnh nhân</h2>
+      <div class="btn-row">
+        <button type="button" class="btn-opt" data-group="adult" aria-pressed="true">Người lớn (≥ 18 tuổi)</button>
+        <button type="button" class="btn-opt" data-group="child" aria-pressed="false">Trẻ em / sơ sinh</button>
+      </div>
+      <div id="child-msg" class="alert alert-red" role="alert" hidden>
+        Ngoài phạm vi công cụ. Dùng phác đồ nhi hoặc sơ sinh. Công cụ không tính toán cho nhóm này.
+      </div>
+    </section>
+
+    <!-- BƯỚC 2: GIỚI TÍNH VÀ CHIỀU CAO -->
+    <section class="card" aria-labelledby="h-sex">
+      <h2 id="h-sex">2. Giới tính và chiều cao</h2>
+      <div class="btn-row" role="group" aria-label="Giới tính">
+        <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
+        <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
+      </div>
+
+      <div class="height-head" style="margin-top:16px">
+        <label for="h-slider" class="muted" style="font-weight:700">Chiều cao</label>
+        <span id="h-val" class="height-value" aria-hidden="true">165 cm</span>
+      </div>
+      <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
+             aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
+      <div class="ibw-line" style="margin-top:12px">
+        <span style="font-weight:700">Cân nặng lý tưởng (IBW)</span>
+        <span id="ibw-val" class="ibw-value" aria-live="polite">—</span>
+      </div>
+      <p id="ibw-note" class="muted" style="font-size:.95rem">Chọn giới tính để tính IBW.</p>
+    </section>
+
+    <!-- BƯỚC 3: TÌNH HUỐNG LÂM SÀNG -->
+    <section class="card" aria-labelledby="h-sc">
+      <h2 id="h-sc">3. Tình huống lâm sàng</h2>
+      <div class="btn-row" role="group" aria-label="Tình huống lâm sàng">
+        <button type="button" class="btn-sc" data-sc="0" aria-pressed="true">
+          Khởi đầu an toàn
+          <small>Mặc định · chưa rõ tổn thương phổi</small>
+        </button>
+        <button type="button" class="btn-sc" data-sc="1" aria-pressed="false">
+          ARDS / viêm phổi nặng
+          <small>Bảo vệ phổi</small>
+        </button>
+        <button type="button" class="btn-sc" data-sc="2" aria-pressed="false">
+          COPD / hen ác tính
+          <small>Chống bẫy khí</small>
+        </button>
+        <button type="button" class="btn-sc" data-sc="3" aria-pressed="false">
+          Chấn thương sọ não
+          <small>Giữ PaCO₂ 35–40 mmHg</small>
+        </button>
+      </div>
+    </section>
+
+    <!-- KẾT QUẢ -->
+    <section class="card" id="results" aria-live="polite" aria-labelledby="h-res">
+      <h2 id="h-res">Thông số gợi ý</h2>
+      <div id="results-body"></div>
+    </section>
+
+    <!-- KIỂM TRA GIÁ TRỊ ĐANG CÀI -->
+    <section class="card" id="checks" aria-labelledby="h-chk">
+      <h2 id="h-chk">Kiểm tra giá trị đang cài (tùy chọn)</h2>
+      <p class="muted" style="font-size:.95rem">Nhập giá trị bạn đang cài trên máy để đối chiếu với khoảng gợi ý. Không được lưu.</p>
+
+      <label for="in-vt" style="font-weight:700">VT đang cài (mL)</label>
+      <input type="number" id="in-vt" min="100" max="1000" step="10" inputmode="numeric">
+      <p id="msg-vt" class="hint" aria-live="polite"></p>
+
+      <label for="in-f" style="font-weight:700">Tần số f đang cài (lần/phút)</label>
+      <input type="number" id="in-f" min="4" max="60" step="1" inputmode="numeric">
+      <p id="msg-f" class="hint" aria-live="polite"></p>
+
+      <label for="in-peep" style="font-weight:700">PEEP đang cài (cmH₂O)</label>
+      <input type="number" id="in-peep" min="0" max="30" step="1" inputmode="numeric">
+      <p id="msg-peep" class="hint" aria-live="polite"></p>
+
+      <label for="in-pplat" style="font-weight:700">P_plateau đo được (cmH₂O)</label>
+      <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
+      <div id="alert-pplat" role="alert" hidden></div>
+    </section>
+
+    <!-- MÔ-ĐUN CẤP CỨU -->
+    <section class="card" aria-labelledby="h-em">
+      <h2 id="h-em">Cấp cứu và tiên lượng</h2>
+      <div class="emergency-grid">
+        <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
+        <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
+        <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
+        <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
+      </div>
+    </section>
+
+    <!-- LƯU Ý THIẾT BỊ -->
+    <section class="card" aria-labelledby="h-dev">
+      <h2 id="h-dev">Lưu ý thiết bị</h2>
+      <p class="muted" style="font-size:.95rem">Các mục dưới đây cần đối chiếu với Operator's Manual của Neumovent GraphNet trước khi tin cậy.</p>
+      <ul>
+        <li>Cơ chế thở khẩn cấp khi chưa chọn nhóm bệnh nhân sau khi bật máy <span class="tag">Đối chiếu Operator's Manual</span></li>
+        <li>Chu kỳ tự hiệu chuẩn cảm biến và thông báo tương ứng <span class="tag">Đối chiếu Operator's Manual</span></li>
+        <li>Vị trí và tên phím giữ thở để đo P_plateau <span class="tag">Đối chiếu Operator's Manual</span></li>
+        <li>Dải cài đặt thực tế của Peak flow, Flow trigger và ngưỡng EtCO₂ <span class="tag">Đối chiếu Operator's Manual</span></li>
+        <li>Khử khuẩn: tránh cồn nguyên chất, chất tẩy chứa clo và khí EO với vỏ máy và màn hình cảm ứng <span class="tag">Đối chiếu Operator's Manual</span></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Phiên bản 1.0.0 · Không lưu trữ dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
+  </footer>
+</div>
+
+<!-- MODAL DOPE -->
+<div id="m-dope" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-dope" hidden>
+  <div class="modal-body">
+    <div class="modal-head">
+      <h2 id="t-dope">Checklist DOPE</h2>
+      <button type="button" class="close-btn" data-close>Đóng</button>
+    </div>
+    <p class="muted">Dùng khi SpO₂ tụt hoặc P_max báo động cao.</p>
+    <ul>
+      <li><strong>D – Displacement:</strong> tuột ống, hoặc ống tụt sâu vào phế quản gốc phải.</li>
+      <li><strong>O – Obstruction:</strong> đờm tắc, gập ống, bệnh nhân cắn ống nội khí quản.</li>
+      <li><strong>P – Pneumothorax:</strong> nghe phổi ngay. Nếu nghi tràn khí màng phổi áp lực, chuẩn bị chọc hút khoang liên sườn II đường trung đòn theo quy trình khoa.</li>
+      <li><strong>E – Equipment:</strong> mất nguồn oxy hoặc khí nén, máy hỏng. Ngắt máy và bóp bóng Ambu có oxy bổ sung.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MODAL LEMON -->
+<div id="m-lemon" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-lemon" hidden>
+  <div class="modal-body">
+    <div class="modal-head">
+      <h2 id="t-lemon">LEMON – đặt nội khí quản khó</h2>
+      <button type="button" class="close-btn" data-close>Đóng</button>
+    </div>
+    <ul>
+      <li><strong>L – Look externally:</strong> nhìn bên ngoài, tìm dấu hiệu bất thường vùng mặt và cổ.</li>
+      <li><strong>E – Evaluate 3-3-2:</strong> khoảng há miệng khoảng 3 khoát ngón, cằm đến móm khoảng 3 khoát ngón, xương móng đến cằm khoảng 2 khoát ngón.</li>
+      <li><strong>M – Mallampati:</strong> đánh giá độ lộ họng khi bệnh nhân há miệng và không phát âm.</li>
+      <li><strong>O – Obstruction:</strong> tìm tắc nghẽn đường thở hoặc khối u.</li>
+      <li><strong>N – Neck mobility:</strong> đánh giá khả năng vận động cổ.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- MODAL MOANS -->
+<div id="m-moans" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-moans" hidden>
+  <div class="modal-body">
+    <div class="modal-head">
+      <h2 id="t-moans">MOANS – bóp bóng khó</h2>
+      <button type="button" class="close-btn" data-close>Đóng</button>
+    </div>
+    <ul>
+      <li><strong>M – Mask seal:</strong> khó bịt kín mặt nạ (râu, mất răng, biến dạng mặt).</li>
+      <li><strong>O – Obesity / Obstruction:</strong> béo phì hoặc tắc nghẽn đường thở.</li>
+      <li><strong>A – Age &gt; 55:</strong> tuổi trên 55.</li>
+      <li><strong>N – No teeth:</strong> mất răng.</li>
+      <li><strong>S – Stiff lungs:</strong> phổi cứng, giảm tuân thủ.</li>
+    </ul>
+    <p class="muted">Nếu bóp bóng khó, cân nhắc đặt đường thở nâng cao hoặc gọi hỗ trợ sớm.</p>
+  </div>
+</div>
+
+<!-- MODAL HOP -->
+<div id="m-hop" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-hop" hidden>
+  <div class="modal-body">
+    <div class="modal-head">
+      <h2 id="t-hop">HOP – huyết động sau đặt nội khí quản</h2>
+      <button type="button" class="close-btn" data-close>Đóng</button>
+    </div>
+    <p>Khi chuyển từ thở tự nhiên sang thở máy áp lực dương, có thể gặp hạ huyết áp, thiếu oxy và toan máu nặng.</p>
+    <ul>
+      <li>Theo dõi huyết áp và nhịp tim ngay sau khi đặt ống và khi bắt đầu thở máy.</li>
+      <li>Chuẩn bị sẵn dịch bolus và thuốc vận mạch (adrenaline hoặc noradrenaline) theo phác đồ khoa.</li>
+      <li>Cân nhắc giảm PEEP và thể tích khi huyết động không ổn định, rồi đánh giá lại.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Các khoảng gợi ý. VT tính theo mL/kg IBW. Các khoảng này cần đối chiếu với phác đồ đơn vị.
+  var SCENARIOS = [
+    {
+      title: 'Khởi đầu an toàn',
+      mode: 'VCV hoặc A/C',
+      vt: [6, 8],
+      f: [12, 16],
+      peep: [5, 5],
+      fio2: '100% ban đầu, hạ dần sau 15–30 phút',
+      spo2: '94–98%',
+      ie: '1:2',
+      pmax: '40 cmH₂O',
+      trigger: '2–3 L/phút',
+      peakFlow: null,
+      etco2: null,
+      notes: ['Chỉ là điểm xuất phát cho bệnh nhân mới đặt nội khí quản, chưa rõ căn nguyên.']
+    },
+    {
+      title: 'ARDS / viêm phổi nặng',
+      mode: 'VCV hoặc PRVC',
+      vt: [4, 6],
+      f: [20, 28],
+      peep: [8, 14],
+      fio2: 'Chuẩn độ theo bảng PEEP/FiO₂',
+      spo2: '88–95%',
+      ie: '1:1.5 – 1:2',
+      pmax: null,
+      trigger: null,
+      peakFlow: null,
+      etco2: null,
+      plateauWarn: true,
+      notes: [
+        'Đo P_plateau bằng thao tác giữ thở cuối thì hít vào theo hướng dẫn máy. Giữ P_plateau dưới 30 cmH₂O.',
+        'Tăng f để bù thông khí phút khi VT thấp.'
+      ]
+    },
+    {
+      title: 'COPD / hen ác tính',
+      mode: 'VCV hoặc SIMV (VCV) + PSV',
+      vt: [6, 8],
+      f: [10, 12],
+      peep: [3, 5],
+      fio2: 'Theo SpO₂ mục tiêu',
+      spo2: '88–92%',
+      ie: '1:3 – 1:4',
+      pmax: null,
+      trigger: null,
+      peakFlow: '60–80 L/phút',
+      etco2: null,
+      notes: [
+        'Kéo dài thì thở ra để tránh bẫy khí. Theo dõi auto-PEEP.',
+        'Cảnh báo khi CO₂ tăng hoặc ý thức giảm.'
+      ]
+    },
+    {
+      title: 'Chấn thương sọ não / tăng ICP',
+      mode: 'VCV (tránh PCV)',
+      vt: [6, 8],
+      f: [16, 20],
+      peep: [3, 5],
+      fio2: 'Theo SpO₂ mục tiêu',
+      spo2: null,
+      ie: null,
+      pmax: null,
+      trigger: null,
+      peakFlow: null,
+      etco2: '35–40 mmHg (mục tiêu PaCO₂ 35–40 mmHg)',
+      notes: [
+        'PEEP thấp để tránh cản trở tĩnh mạch về tim, từ đó hạn chế tăng ICP.',
+        'Bật theo dõi EtCO₂ và đặt ngưỡng báo động. Đối chiếu cấu hình thực tế trên máy.'
+      ]
+    }
+  ];
+
+  var state = { sex: null, height: 165, scenario: 0, group: 'adult' };
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  // Công thức Devine, sàn 30 kg
+  function computeIBW() {
+    if (!state.sex) return null;
+    var base = state.sex === 'M' ? 50 : 45.5;
+    var v = base + 0.91 * (state.height - 152.4);
+    return v < 30 ? 30 : v;
+  }
+
+  function rangeText(a, b) {
+    return a === b ? String(a) : a + '–' + b;
+  }
+
+  function scenarioVT(sc, w) {
+    return { lo: Math.round(sc.vt[0] * w), hi: Math.round(sc.vt[1] * w) };
+  }
+
+  function renderResults(w) {
+    var box = $('results-body');
+    if (w === null) {
+      box.innerHTML = '<p class="muted">Chọn giới tính để xem thông số gợi ý.</p>';
+      return;
+    }
+    var sc = SCENARIOS[state.scenario];
+    var vt = scenarioVT(sc, w);
+
+    var html = '';
+    html += '<div class="result-grid">';
+    html += '<div class="result vt"><div class="label">VT (thể tích khí lưu thông)</div>' +
+            '<div class="big">' + vt.lo + '–' + vt.hi + '</div>' +
+            '<div class="unit">mL</div>' +
+            '<div class="sub">' + sc.vt[0] + '–' + sc.vt[1] + ' mL/kg IBW</div></div>';
+    html += '<div class="result"><div class="label">Tần số f</div>' +
+            '<div class="big">' + rangeText(sc.f[0], sc.f[1]) + '</div>' +
+            '<div class="unit">lần/phút</div></div>';
+    html += '<div class="result peep"><div class="label">PEEP</div>' +
+            '<div class="big">' + rangeText(sc.peep[0], sc.peep[1]) + '</div>' +
+            '<div class="unit">cmH₂O</div></div>';
+    html += '<div class="result"><div class="label">FiO₂</div>' +
+            '<div class="big" style="font-size:clamp(1.6rem,7vw,2.2rem)">' + sc.fio2.split(' ')[0] + '</div>' +
+            '<div class="sub">' + sc.fio2 + '</div></div>';
+    html += '<div class="result wide"><div class="label">Chế độ và thông số khác</div>' +
+            '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Mode: <strong>' + sc.mode + '</strong></div>';
+    if (sc.spo2) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">SpO₂ mục tiêu: <strong>' + sc.spo2 + '</strong></div>';
+    if (sc.ie) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">I:E: <strong>' + sc.ie + '</strong></div>';
+    if (sc.pmax) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Giới hạn P_max báo động: <strong>' + sc.pmax + '</strong></div>';
+    if (sc.trigger) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Flow trigger: <strong>' + sc.trigger + '</strong> <span class="tag">Đối chiếu máy</span></div>';
+    if (sc.peakFlow) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Peak flow: <strong>' + sc.peakFlow + '</strong> <span class="tag">Đối chiếu máy</span></div>';
+    if (sc.etco2) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">EtCO₂ báo động: <strong>' + sc.etco2 + '</strong> <span class="tag">Đối chiếu máy</span></div>';
+    html += '</div></div>';
+
+    html += '<ul class="notes" style="margin-top:12px">';
+    sc.notes.forEach(function (n) { html += '<li>' + n + '</li>'; });
+    html += '</ul>';
+
+    box.innerHTML = html;
+  }
+
+  function setHint(msgId, text, cls) {
+    var el = $(msgId);
+    el.textContent = text;
+    el.className = 'hint' + (cls ? ' ' + cls : '');
+  }
+
+  // Kiểm tra giá trị người dùng nhập so với khoảng gợi ý
+  function checkField(inputId, msgId, lo, hi, unit) {
+    var raw = $(inputId).value;
+    if (raw === '') { setHint(msgId, '', ''); return; }
+    var v = Number(raw);
+    if (lo === null) { setHint(msgId, 'Chọn giới tính để đối chiếu.', ''); return; }
+    if (v < lo || v > hi) {
+      setHint(msgId, 'Ngoài khoảng gợi ý ' + lo + '–' + hi + ' ' + unit + '. Kiểm tra lại trước khi áp dụng.', 'hint-amber');
+    } else {
+      setHint(msgId, 'Trong khoảng gợi ý ' + lo + '–' + hi + ' ' + unit + '.', 'hint-ok');
+    }
+  }
+
+  function runChecks() {
+    var w = computeIBW();
+    var sc = SCENARIOS[state.scenario];
+
+    if (w === null) {
+      checkField('in-vt', 'msg-vt', null, null, 'mL');
+    } else {
+      var vt = scenarioVT(sc, w);
+      checkField('in-vt', 'msg-vt', vt.lo, vt.hi, 'mL');
+    }
+    checkField('in-f', 'msg-f', sc.f[0], sc.f[1], 'lần/phút');
+    checkField('in-peep', 'msg-peep', sc.peep[0], sc.peep[1], 'cmH₂O');
+
+    var alertBox = $('alert-pplat');
+    var raw = $('in-pplat').value;
+    if (raw === '') {
+      alertBox.hidden = true;
+      alertBox.innerHTML = '';
+      alertBox.className = '';
+      return;
+    }
+    var p = Number(raw);
+    alertBox.hidden = false;
+    if (p >= 30) {
+      alertBox.className = 'alert alert-red';
+      alertBox.textContent = 'P_plateau ≥ 30 cmH₂O. Xem xét giảm VT theo phác đồ đơn vị và đánh giá lại bệnh nhân ngay.';
+    } else {
+      alertBox.className = 'alert alert-blue';
+      alertBox.textContent = 'P_plateau dưới 30 cmH₂O. Vẫn cần đánh giá theo bệnh cảnh lâm sàng.';
+    }
+  }
+
+  function render() {
+    $('h-val') && ($('h-val').textContent = state.height + ' cm');
+    $('h-slider').value = state.height;
+    $('h-slider').setAttribute('aria-valuenow', String(state.height));
+    $('h-slider').setAttribute('aria-valuetext', state.height + ' centimét');
+
+    document.querySelectorAll('[data-sex]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-sex') === state.sex));
+    });
+    document.querySelectorAll('[data-group]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-group') === state.group));
+    });
+    document.querySelectorAll('[data-sc]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(Number(b.getAttribute('data-sc')) === state.scenario));
+    });
+
+    var child = state.group === 'child';
+    $('child-msg').hidden = !child;
+    $('results').hidden = child;
+    $('checks').hidden = child;
+    if (child) return;
+
+    var w = computeIBW();
+    if (w === null) {
+      $('ibw-val').textContent = '—';
+      $('ibw-note').textContent = 'Chọn giới tính để tính IBW.';
+    } else {
+      $('ibw-val').textContent = w.toFixed(1) + ' kg';
+      $('ibw-note').textContent = w === 30
+        ? 'Công thức Devine. Đã áp dụng sàn 30 kg.'
+        : 'Công thức Devine. Không dùng cân nặng thực tế.';
+    }
+    renderResults(w);
+    runChecks();
+  }
+
+  // Sự kiện: nhóm bệnh nhân
+  document.querySelectorAll('[data-group]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.group = b.getAttribute('data-group');
+      render();
+    });
+  });
+
+  // Sự kiện: giới tính
+  document.querySelectorAll('[data-sex]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.sex = b.getAttribute('data-sex');
+      render();
+    });
+  });
+
+  // Sự kiện: tình huống
+  document.querySelectorAll('[data-sc]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.scenario = Number(b.getAttribute('data-sc'));
+      render();
+    });
+  });
+
+  // Sự kiện: thanh trượt chiều cao, tính lại theo thời gian thực
+  $('h-slider').addEventListener('input', function (e) {
+    state.height = Number(e.target.value);
+    render();
+  });
+
+  // Sự kiện: ô nhập kiểm tra
+  ['in-vt', 'in-f', 'in-peep', 'in-pplat'].forEach(function (id) {
+    $(id).addEventListener('input', runChecks);
+  });
+
+  // Modal cấp cứu
+  var lastFocus = null;
+  function openModal(id) {
+    lastFocus = document.activeElement;
+    var m = $(id);
+    m.hidden = false;
+    var closeBtn = m.querySelector('[data-close]');
+    if (closeBtn) closeBtn.focus();
+  }
+  function closeModal(m) {
+    m.hidden = true;
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+
+  document.querySelectorAll('[data-open]').forEach(function (b) {
+    b.addEventListener('click', function () { openModal(b.getAttribute('data-open')); });
+  });
+  document.querySelectorAll('.modal').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) closeModal(m); });
+    m.querySelectorAll('[data-close]').forEach(function (c) {
+      c.addEventListener('click', function () { closeModal(m); });
+    });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal').forEach(function (m) {
+        if (!m.hidden) closeModal(m);
+      });
+    }
+  });
+
+  render();
+
+  // Đăng ký Service Worker để chạy offline
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function (err) {
+        console.warn('Không đăng ký được Service Worker:', err);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

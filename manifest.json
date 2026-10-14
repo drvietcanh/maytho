@@ -1,0 +1,20 @@
+﻿{
+  "name": "Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)",
+  "short_name": "Vent Assist",
+  "description": "Công cụ tham khảo thông số khởi đầu cho máy thở Neumovent GraphNet trong cấp cứu. Chỉ dành cho người lớn. Không thay thế phán đoán lâm sàng.",
+  "lang": "vi",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
