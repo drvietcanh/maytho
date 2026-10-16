@@ -1,5 +1,5 @@
 /*
- * Service Worker: Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu
+ * Service Worker: Cài Đặt Ban Đầu Máy Thở Cấp Cứu
  * Chiến lược: Cache-First cho tài nguyên nội bộ, chạy offline sau lần tải đầu.
  *
  * QUY TRÌNH CẬP NHẬT PHIÊN BẢN:
@@ -7,7 +7,7 @@
  */
 
 const CACHE_PREFIX = 'vent-assist-';
-const CACHE_VERSION = 'v1.2.0';
+const CACHE_VERSION = 'v1.3.0';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 const REQUIRED_ASSETS = ['./index.html', './manifest.json'];
