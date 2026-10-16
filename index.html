@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.4.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.5.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
     --bg: #0f172a; --panel: #1e293b; --panel-2: #0b1220; --line: #475569;
     --text: #f8fafc; --muted: #cbd5e1; --blue: #0284c7; --blue-light: #38bdf8;
@@ -42,7 +42,6 @@
   .banner strong { color: #fde68a; }
   .card { background: var(--panel); border-radius: 16px; padding: 16px; margin: 12px 0; }
 
-  /* Thanh trạng thái luôn hiển thị ở đầu màn hình */
   .status-bar {
     position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px;
@@ -103,7 +102,6 @@
   .alert-red { background: #7f1d1d; color: #fff; border: 2px solid var(--red); }
   .alert-amber { background: #78350f; color: #fff; border: 2px solid var(--amber); }
   .alert-blue { background: #0c4a6e; color: #fff; border: 2px solid var(--blue-light); }
-  .hint { font-size: .95rem; font-weight: 600; margin: 4px 0 8px; color: var(--muted); }
 
   .timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .timer { font-size: clamp(2.6rem, 12vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--blue-light); }
@@ -131,192 +129,177 @@
 
   <header>
     <h1>Cài đặt ban đầu máy thở cấp cứu</h1>
-    <p class="muted small">Neumovent TS · VC-A/C (VCV trên máy) · Người lớn · Bác sĩ trực viện</p>
+    <p class="muted small">Neumovent TS · VC-A/C (VCV trên máy) · Bác sĩ trực viện</p>
   </header>
 
   <div class="banner" role="note">
-    <strong>Tại Khoa Cấp cứu BV Quân y 13.</strong><br>
-    Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
+    <strong>Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13.</strong><br>
+    Chỉ dành cho người lớn từ 18 tuổi. Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
   </div>
 
-  <!-- NHÓM BỆNH NHÂN -->
-  <section class="card" aria-labelledby="h-group">
-    <h2 id="h-group">Nhóm bệnh nhân</h2>
-    <div class="btn-row">
-      <button type="button" class="btn-opt" data-group="adult" aria-pressed="true">Người lớn (≥ 18 tuổi)</button>
-      <button type="button" class="btn-opt" data-group="child" aria-pressed="false">Trẻ em / sơ sinh</button>
-    </div>
-    <div id="child-msg" class="alert alert-red" role="alert" hidden>
-      Ngoài phạm vi công cụ. Gọi bác sĩ chuyên ngành nhi hoặc sơ sinh ngay.
-    </div>
-  </section>
+  <!-- THANH TRẠNG THÁI -->
+  <div class="status-bar" role="region" aria-label="Trạng thái hiện tại">
+    <span id="sb-elapsed">Chưa ghi giờ nối máy</span>
+    <span id="sb-red">0 cảnh báo đỏ</span>
+    <span id="sb-spec">Chuyên ngành: chưa đến</span>
+  </div>
 
-  <div id="adult-only">
+  <!-- THANH TAB -->
+  <nav class="tabs" role="tablist" aria-label="Các bước">
+    <button type="button" class="tab" role="tab" id="tab-btn-0" aria-controls="tab-0" aria-selected="true" data-tab="0">1. Thiết lập</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-1" aria-controls="tab-1" aria-selected="false" tabindex="-1" data-tab="1">2. Sau nối</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-2" aria-controls="tab-2" aria-selected="false" tabindex="-1" data-tab="2">3. Chuyển giao</button>
+  </nav>
 
-    <!-- THANH TRẠNG THÁI -->
-    <div class="status-bar" role="region" aria-label="Trạng thái hiện tại">
-      <span id="sb-elapsed">Chưa ghi giờ nối máy</span>
-      <span id="sb-red">0 cảnh báo đỏ</span>
-      <span id="sb-spec">Chuyên ngành: chưa đến</span>
-    </div>
+  <!-- TAB 1: THIẾT LẬP -->
+  <div id="tab-0" role="tabpanel" aria-labelledby="tab-btn-0">
 
-    <!-- THANH TAB -->
-    <nav class="tabs" role="tablist" aria-label="Các bước">
-      <button type="button" class="tab" role="tab" id="tab-btn-0" aria-controls="tab-0" aria-selected="true" data-tab="0">1. Thiết lập</button>
-      <button type="button" class="tab" role="tab" id="tab-btn-1" aria-controls="tab-1" aria-selected="false" tabindex="-1" data-tab="1">2. Sau nối</button>
-      <button type="button" class="tab" role="tab" id="tab-btn-2" aria-controls="tab-2" aria-selected="false" tabindex="-1" data-tab="2">3. Chuyển giao</button>
-    </nav>
+    <section class="card" aria-labelledby="h-sex">
+      <h2 id="h-sex">Giới tính và chiều cao</h2>
+      <div class="btn-row" role="group" aria-label="Giới tính">
+        <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
+        <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
+      </div>
 
-    <!-- TAB 1: THIẾT LẬP -->
-    <div id="tab-0" role="tabpanel" aria-labelledby="tab-btn-0">
+      <div class="nudge">
+        <button type="button" id="h-minus" aria-label="Giảm 1 cm">−</button>
+        <span id="h-val" class="height-value">165 cm</span>
+        <button type="button" id="h-plus" aria-label="Tăng 1 cm">+</button>
+      </div>
+      <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
+             aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
 
-      <section class="card" aria-labelledby="h-sex">
-        <h2 id="h-sex">Giới tính và chiều cao</h2>
-        <div class="btn-row" role="group" aria-label="Giới tính">
-          <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
-          <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
+      <label class="lbl" for="h-src">Nguồn chiều cao</label>
+      <select id="h-src">
+        <option value="">Chọn nguồn</option>
+        <option value="nam">Đo khi nằm</option>
+        <option value="ho-so">Hồ sơ</option>
+        <option value="nguoi-nha">Người nhà khai</option>
+        <option value="uoc-luong">Ước lượng (sai số lớn)</option>
+      </select>
+
+      <div class="pbw-line">
+        <span style="font-weight:700">PBW (Devine)</span>
+        <span id="pbw-val" class="pbw-value" aria-live="polite">—</span>
+      </div>
+      <p id="pbw-note" class="muted small">Chọn giới tính để tính PBW.</p>
+    </section>
+
+    <section class="card" id="results" aria-labelledby="h-res">
+      <h2 id="h-res">Cài đặt khởi đầu (VC-A/C)</h2>
+      <div id="results-body"></div>
+    </section>
+
+    <section class="card" aria-labelledby="h-pre">
+      <h2 id="h-pre">Kiểm tra trước khi nối bệnh nhân</h2>
+      <label class="check-item"><input type="checkbox" id="pre1"> <span>Đã chọn nhóm bệnh nhân trên máy trong 30 giây sau khi bật (nếu không, máy vào chế độ khẩn cấp)</span></label>
+      <label class="check-item"><input type="checkbox" id="pre2"> <span>Pin và nguồn điện ổn; máy không báo "Defective Battery"</span></label>
+      <label class="check-item"><input type="checkbox" id="pre3"> <span>Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy ở cạnh giường</span></label>
+      <label class="check-item"><input type="checkbox" id="pre4"> <span>Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật</span></label>
+      <label class="check-item"><input type="checkbox" id="pre5"> <span>Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở</span></label>
+      <label class="check-item"><input type="checkbox" id="pre6" disabled> <span>Đã chọn nguồn chiều cao (tự động)</span></label>
+      <label class="check-item"><input type="checkbox" id="pre7"> <span>Đã đặt peak flow và trigger theo Operator's Manual của máy tại khoa</span></label>
+      <p id="pre-status" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <!-- TAB 2: SAU NỐI -->
+  <div id="tab-1" role="tabpanel" aria-labelledby="tab-btn-1" hidden>
+
+    <section class="card" aria-labelledby="h-intub">
+      <h2 id="h-intub">Ghi giờ nối máy</h2>
+      <button type="button" id="btn-intubate" class="btn-go btn-intubate">Đã nối máy: ghi giờ và bắt đầu đếm 30 phút</button>
+      <p class="muted small">Giờ chỉ lưu trong trang này, không lưu lại khi đóng ứng dụng.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-read">
+      <h2 id="h-read">Số đọc trên máy</h2>
+      <p class="muted small">Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.</p>
+
+      <label class="lbl" for="in-vt-act">VT thực tế (mL)</label>
+      <input type="number" id="in-vt-act" min="50" max="2500" step="5" inputmode="numeric">
+
+      <label class="lbl" for="in-peep-act">PEEP đang cài (cmH₂O)</label>
+      <input type="number" id="in-peep-act" min="0" max="30" step="1" inputmode="numeric">
+
+      <label class="lbl" for="in-spo2">SpO₂ (%)</label>
+      <input type="number" id="in-spo2" min="50" max="100" step="1" inputmode="numeric">
+
+      <label class="lbl" for="in-ppeak">Ppeak (cmH₂O)</label>
+      <input type="number" id="in-ppeak" min="0" max="80" step="1" inputmode="numeric">
+
+      <label class="lbl" for="in-pplat">Pplat (cmH₂O)</label>
+      <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
+
+      <label class="lbl" for="in-autopeep">Auto-PEEP (cmH₂O, nếu đo được)</label>
+      <input type="number" id="in-autopeep" min="0" max="30" step="1" inputmode="numeric">
+    </section>
+
+    <div id="alert-box" role="alert" hidden></div>
+
+    <section class="card" aria-labelledby="h-em">
+      <h2 id="h-em">Cấp cứu và tiên lượng</h2>
+      <div class="emergency-grid">
+        <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
+        <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
+        <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
+        <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB 3: CHUYỂN GIAO -->
+  <div id="tab-2" role="tabpanel" aria-labelledby="tab-btn-2" hidden>
+
+    <section class="card" aria-labelledby="h-timer">
+      <h2 id="h-timer">Đồng hồ chờ bác sĩ chuyên ngành</h2>
+      <p class="small">Bác sĩ chuyên ngành hồi sức cần đến trong 30 phút kể từ khi nối máy.</p>
+      <div class="timer-row">
+        <span id="timer" class="timer" aria-live="off">30:00</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button type="button" id="timer-start" class="btn-small btn-go">Bắt đầu đếm</button>
+          <button type="button" id="timer-reset" class="btn-small">Đặt lại</button>
         </div>
+      </div>
+      <p id="timer-msg" class="muted small" aria-live="polite"></p>
 
-        <div class="nudge">
-          <button type="button" id="h-minus" aria-label="Giảm 1 cm">−</button>
-          <span id="h-val" class="height-value">165 cm</span>
-          <button type="button" id="h-plus" aria-label="Tăng 1 cm">+</button>
-        </div>
-        <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
-               aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
+      <label class="spec-row"><input type="checkbox" id="spec-arrived"> <span>Bác sĩ chuyên ngành đã đến (dừng đồng hồ)</span></label>
+      <p id="spec-time" class="muted small"></p>
+    </section>
 
-        <label class="lbl" for="h-src">Nguồn chiều cao</label>
-        <select id="h-src">
-          <option value="">Chọn nguồn</option>
-          <option value="nam">Đo khi nằm</option>
-          <option value="ho-so">Hồ sơ</option>
-          <option value="nguoi-nha">Người nhà khai</option>
-          <option value="uoc-luong">Ước lượng (sai số lớn)</option>
-        </select>
+    <section class="card" aria-labelledby="h-sbar">
+      <h2 id="h-sbar">Tóm tắt chuyển giao (SBAR)</h2>
+      <textarea id="sbar" readonly aria-label="Tóm tắt chuyển giao"></textarea>
+      <button type="button" id="copy-sbar" class="btn-go btn-full">Sao chép tóm tắt</button>
+      <p id="copy-msg" class="muted small" aria-live="polite"></p>
+      <p class="muted small">Tóm tắt không có họ tên và số bệnh án. Dán vào hồ sơ trước khi đóng ứng dụng.</p>
+    </section>
 
-        <div class="pbw-line">
-          <span style="font-weight:700">PBW (Devine)</span>
-          <span id="pbw-val" class="pbw-value" aria-live="polite">—</span>
-        </div>
-        <p id="pbw-note" class="muted small">Chọn giới tính để tính PBW.</p>
-      </section>
+    <section class="card" aria-labelledby="h-call">
+      <h2 id="h-call">Gọi bác sĩ chuyên ngành ngay khi</h2>
+      <ul>
+        <li>SpO₂ dưới 92% và chưa cải thiện sau xử trí ban đầu.</li>
+        <li>Pplat trên 30 cmH₂O.</li>
+        <li>Ppeak từ 40 cmH₂O trở lên mà chưa tìm ra nguyên nhân.</li>
+        <li>Có auto-PEEP, hoặc VT thực tế thấp hơn cài trên 10%.</li>
+        <li>Huyết áp tụt, nghi tràn khí màng phổi áp lực, hoặc bệnh nhân không đồng bộ với máy.</li>
+      </ul>
+    </section>
 
-      <section class="card" id="results" aria-labelledby="h-res">
-        <h2 id="h-res">Cài đặt khởi đầu (VC-A/C)</h2>
-        <div id="results-body"></div>
-      </section>
-
-      <section class="card" aria-labelledby="h-pre">
-        <h2 id="h-pre">Kiểm tra trước khi nối bệnh nhân</h2>
-        <label class="check-item"><input type="checkbox" id="pre1"> <span>Đã chọn nhóm bệnh nhân trên máy trong 30 giây sau khi bật (nếu không, máy vào chế độ khẩn cấp)</span></label>
-        <label class="check-item"><input type="checkbox" id="pre2"> <span>Pin và nguồn điện ổn; máy không báo "Defective Battery"</span></label>
-        <label class="check-item"><input type="checkbox" id="pre3"> <span>Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy ở cạnh giường</span></label>
-        <label class="check-item"><input type="checkbox" id="pre4"> <span>Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật</span></label>
-        <label class="check-item"><input type="checkbox" id="pre5"> <span>Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở</span></label>
-        <label class="check-item"><input type="checkbox" id="pre6" disabled> <span>Đã chọn nguồn chiều cao (tự động)</span></label>
-        <label class="check-item"><input type="checkbox" id="pre7"> <span>Đã đặt peak flow và trigger theo Operator's Manual của máy tại khoa</span></label>
-        <p id="pre-status" aria-live="polite"></p>
-      </section>
-    </div>
-
-    <!-- TAB 2: SAU NỐI -->
-    <div id="tab-1" role="tabpanel" aria-labelledby="tab-btn-1" hidden>
-
-      <section class="card" aria-labelledby="h-intub">
-        <h2 id="h-intub">Ghi giờ nối máy</h2>
-        <button type="button" id="btn-intubate" class="btn-go btn-intubate">Đã nối máy: ghi giờ và bắt đầu đếm 30 phút</button>
-        <p class="muted small">Giờ chỉ lưu trong trang này, không lưu lại khi đóng ứng dụng.</p>
-      </section>
-
-      <section class="card" aria-labelledby="h-read">
-        <h2 id="h-read">Số đọc trên máy</h2>
-        <p class="muted small">Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.</p>
-
-        <label class="lbl" for="in-vt-act">VT thực tế (mL)</label>
-        <input type="number" id="in-vt-act" min="50" max="2500" step="5" inputmode="numeric">
-
-        <label class="lbl" for="in-peep-act">PEEP đang cài (cmH₂O)</label>
-        <input type="number" id="in-peep-act" min="0" max="30" step="1" inputmode="numeric">
-
-        <label class="lbl" for="in-spo2">SpO₂ (%)</label>
-        <input type="number" id="in-spo2" min="50" max="100" step="1" inputmode="numeric">
-
-        <label class="lbl" for="in-ppeak">Ppeak (cmH₂O)</label>
-        <input type="number" id="in-ppeak" min="0" max="80" step="1" inputmode="numeric">
-
-        <label class="lbl" for="in-pplat">Pplat (cmH₂O)</label>
-        <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
-
-        <label class="lbl" for="in-autopeep">Auto-PEEP (cmH₂O, nếu đo được)</label>
-        <input type="number" id="in-autopeep" min="0" max="30" step="1" inputmode="numeric">
-      </section>
-
-      <div id="alert-box" role="alert" hidden></div>
-
-      <section class="card" aria-labelledby="h-em">
-        <h2 id="h-em">Cấp cứu và tiên lượng</h2>
-        <div class="emergency-grid">
-          <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
-          <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
-          <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
-          <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
-        </div>
-      </section>
-    </div>
-
-    <!-- TAB 3: CHUYỂN GIAO -->
-    <div id="tab-2" role="tabpanel" aria-labelledby="tab-btn-2" hidden>
-
-      <section class="card" aria-labelledby="h-timer">
-        <h2 id="h-timer">Đồng hồ chờ bác sĩ chuyên ngành</h2>
-        <p class="small">Bác sĩ chuyên ngành hồi sức cần đến trong 30 phút kể từ khi nối máy.</p>
-        <div class="timer-row">
-          <span id="timer" class="timer" aria-live="off">30:00</span>
-          <div style="display:flex; gap:10px; flex-wrap:wrap">
-            <button type="button" id="timer-start" class="btn-small btn-go">Bắt đầu đếm</button>
-            <button type="button" id="timer-reset" class="btn-small">Đặt lại</button>
-          </div>
-        </div>
-        <p id="timer-msg" class="muted small" aria-live="polite"></p>
-
-        <label class="spec-row"><input type="checkbox" id="spec-arrived"> <span>Bác sĩ chuyên ngành đã đến (dừng đồng hồ)</span></label>
-        <p id="spec-time" class="muted small"></p>
-      </section>
-
-      <section class="card" aria-labelledby="h-sbar">
-        <h2 id="h-sbar">Tóm tắt chuyển giao (SBAR)</h2>
-        <textarea id="sbar" readonly aria-label="Tóm tắt chuyển giao"></textarea>
-        <button type="button" id="copy-sbar" class="btn-go btn-full">Sao chép tóm tắt</button>
-        <p id="copy-msg" class="muted small" aria-live="polite"></p>
-        <p class="muted small">Tóm tắt không có họ tên và số bệnh án. Dán vào hồ sơ trước khi đóng ứng dụng.</p>
-      </section>
-
-      <section class="card" aria-labelledby="h-call">
-        <h2 id="h-call">Gọi bác sĩ chuyên ngành ngay khi</h2>
-        <ul>
-          <li>SpO₂ dưới 92% và chưa cải thiện sau xử trí ban đầu.</li>
-          <li>Pplat trên 30 cmH₂O.</li>
-          <li>Ppeak từ 40 cmH₂O trở lên mà chưa tìm ra nguyên nhân.</li>
-          <li>Có auto-PEEP, hoặc VT thực tế thấp hơn cài trên 10%.</li>
-          <li>Huyết áp tụt, nghi tràn khí màng phổi áp lực, hoặc bệnh nhân không đồng bộ với máy.</li>
-        </ul>
-      </section>
-
-      <section class="card" aria-labelledby="h-dev">
-        <h2 id="h-dev">Lưu ý thiết bị</h2>
-        <ul class="small">
-          <li>TS không có capnography (EtCO₂). <span class="tag">Đã xác minh (Technical Manual)</span></li>
-          <li>PRVC, SIMV và VSV là tùy chọn trên TS. Mặc định là VC-A/C. <span class="tag">Đã xác minh (Technical Manual)</span></li>
-          <li>Phím Insp/Exp Pause: giữ hít vào tối đa 7 giây. <span class="tag">Đã xác minh (Technical Manual)</span></li>
-          <li>Chế độ khẩn cấp khi chưa chọn nhóm bệnh nhân trong 30 giây: PCV 10 cmH₂O, 20 lần/phút. <span class="tag">Đã xác minh (Technical Manual)</span></li>
-          <li>Peak flow, trigger và công thức PBW của máy: <span class="tag">Đối chiếu Operator's Manual</span></li>
-        </ul>
-      </section>
-    </div>
+    <section class="card" aria-labelledby="h-dev">
+      <h2 id="h-dev">Lưu ý thiết bị</h2>
+      <ul class="small">
+        <li>TS không có capnography (EtCO₂). <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>PRVC, SIMV và VSV là tùy chọn trên TS. Mặc định là VC-A/C. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Phím Insp/Exp Pause: giữ hít vào tối đa 7 giây. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Chế độ khẩn cấp khi chưa chọn nhóm bệnh nhân trong 30 giây: PCV 10 cmH₂O, 20 lần/phút. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Peak flow, trigger và công thức PBW của máy: <span class="tag">Đối chiếu Operator's Manual</span></li>
+      </ul>
+    </section>
   </div>
 
   <footer>
-    <p>Phiên bản 1.4.0 · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
+    <p>Phiên bản 1.5.0 · Chỉ người lớn · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
   </footer>
 </div>
 
@@ -383,15 +366,15 @@
 (function () {
   'use strict';
 
-  // Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13. 
-  // Ứng dụng chỉ hiển thị gợi ý. Không gửi, không lưu dữ liệu, không đặt thông số lên máy.
+  // Đề xuất của Khoa Cấp cứu BV Quân y 13.
+  // Chỉ dành cho người lớn. Ứng dụng chỉ hiển thị gợi ý. Không gửi, không lưu dữ liệu, không đặt thông số lên máy.
   // Bác sĩ trực không tự giảm VT trong phiên bản này.
 
   var START = { vtMlKg: 6, rr: 15, ie: 2, peep: 5, fio2: '100%', pmax: 40, spo2Min: 92, spo2Max: 96 };
   var LIMIT_MS = 30 * 60 * 1000;
 
-  var state = { group: 'adult', sex: null, height: 165, tab: 0, intubatedAt: null, specAt: null };
-  var deadline = null, tickId = null, elapsedId = null, wakeLock = null;
+  var state = { sex: null, height: 165, tab: 0, intubatedAt: null, specAt: null };
+  var deadline = null, tickId = null, wakeLock = null;
   var lastRed = 0;
 
   function $(id) { return document.getElementById(id); }
@@ -477,7 +460,6 @@
   }
 
   // ---------- Cảnh báo sau nối ----------
-  // Trả về danh sách [lớp CSS, nội dung]
   function evaluate(w) {
     var out = [];
     var spo2 = num('in-spo2'), ppeak = num('in-ppeak'), pplat = num('in-pplat');
@@ -582,12 +564,12 @@
       : 'Chuyên ngành: đã đến ' + clock(state.specAt);
   }
 
-  // ---------- Đồng hồ 30 phút (tính theo mốc thời gian thực) ----------
+  // ---------- Đồng hồ 30 phút (theo mốc thời gian thực) ----------
   function requestWake() {
     if (!('wakeLock' in navigator)) return;
     navigator.wakeLock.request('screen').then(function (lock) {
       wakeLock = lock;
-    }).catch(function () { /* trình duyệt không cho phép: bỏ qua */ });
+    }).catch(function () { /* không được phép: bỏ qua */ });
   }
   function releaseWake() {
     if (wakeLock) {
@@ -604,7 +586,7 @@
     var left = deadline - Date.now();
     if (left <= 0) {
       $('timer').textContent = '00:00';
-      $('timer-msg').textContent = 'Quá 30 phút chưa có bác sĩ chuyên ngành. Báo trực tiếp lãnh đạo khoa và bác sĩ hồi sức.';
+      $('timer-msg').textContent = 'Quá 30 phút chưa có bác sĩ chuyên ngành Hồi sức. Báo trực tiếp lãnh đạo Bệnh viện.';
       stopTicking();
     } else {
       $('timer').textContent = fmtDur(left);
@@ -651,14 +633,6 @@
 
   // ---------- Render tổng ----------
   function render() {
-    var child = state.group === 'child';
-    $('child-msg').hidden = !child;
-    $('adult-only').hidden = child;
-    document.querySelectorAll('[data-group]').forEach(function (b) {
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-group') === state.group));
-    });
-    if (child) return;
-
     $('h-val').textContent = state.height + ' cm';
     $('h-slider').value = state.height;
     $('h-slider').setAttribute('aria-valuenow', String(state.height));
@@ -694,9 +668,6 @@
   }
 
   // ---------- Sự kiện ----------
-  document.querySelectorAll('[data-group]').forEach(function (b) {
-    b.addEventListener('click', function () { state.group = b.getAttribute('data-group'); render(); });
-  });
   document.querySelectorAll('[data-sex]').forEach(function (b) {
     b.addEventListener('click', function () { state.sex = b.getAttribute('data-sex'); render(); });
   });
@@ -804,7 +775,7 @@
   setTab(0);
   render();
   updateTimer();
-  elapsedId = setInterval(updateStatus, 1000);
+  setInterval(updateStatus, 1000);
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
