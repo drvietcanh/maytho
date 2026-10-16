@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<meta name="description" content="Công cụ tham khảo thông số khởi đầu cho máy thở Neumovent GraphNet. Chỉ dành cho người lớn. Không thay thế phán đoán lâm sàng.">
+<meta name="description" content="Đề xuất hỗ trợ cài đặt máy thở TECME Neumovent TS cho người lớn. Chưa phê duyệt. Không thay thế phán đoán lâm sàng.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,229 +14,101 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.0.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.2.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
-    --bg: #0f172a;
-    --panel: #1e293b;
-    --panel-2: #0b1220;
-    --line: #475569;
-    --text: #f8fafc;
-    --muted: #cbd5e1;
-    --blue: #0284c7;
-    --blue-light: #38bdf8;
-    --green: #10b981;
-    --amber: #f59e0b;
-    --red: #ef4444;
-    color-scheme: dark;
+    --bg: #0f172a; --panel: #1e293b; --panel-2: #0b1220; --line: #475569;
+    --text: #f8fafc; --muted: #cbd5e1; --blue: #0284c7; --blue-light: #38bdf8;
+    --green: #10b981; --amber: #f59e0b; --red: #ef4444; color-scheme: dark;
   }
-
   * { box-sizing: border-box; }
-
   html, body { margin: 0; padding: 0; }
-
   body {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg); color: var(--text);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    font-size: 1.05rem;
-    line-height: 1.5;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-    min-height: 100vh;
+    font-size: 1.05rem; line-height: 1.5; min-height: 100vh;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   }
-
+  [hidden] { display: none !important; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 12px; }
-
   h1 { font-size: 1.35rem; margin: 8px 0 4px; line-height: 1.25; }
   h2 { font-size: 1.1rem; margin: 0 0 10px; color: var(--blue-light); text-transform: uppercase; letter-spacing: .04em; }
-  h3 { font-size: 1.05rem; margin: 12px 0 6px; }
-
   p { margin: 6px 0; }
   ul { margin: 6px 0; padding-left: 1.25rem; }
   li { margin: 4px 0; }
-
   .muted { color: var(--muted); }
-  .sr-only {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-  }
 
-  .disclaimer {
-    background: #422006;
-    border: 2px solid var(--amber);
-    color: #fef3c7;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-weight: 700;
-    margin-bottom: 12px;
+  .banner {
+    background: #422006; border: 2px solid var(--amber); color: #fef3c7;
+    padding: 12px 14px; border-radius: 12px; font-weight: 700; margin-bottom: 12px;
   }
-
-  .card {
-    background: var(--panel);
-    border-radius: 16px;
-    padding: 16px;
-    margin: 12px 0;
-  }
+  .banner strong { color: #fde68a; }
+  .card { background: var(--panel); border-radius: 16px; padding: 16px; margin: 12px 0; }
 
   button {
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-    min-height: 64px;
-    border-radius: 12px;
-    border: 2px solid var(--line);
-    background: var(--panel);
-    padding: 10px 14px;
-    font-weight: 700;
-    font-size: 1.15rem;
-    touch-action: manipulation;
+    font: inherit; color: inherit; cursor: pointer; min-height: 64px; border-radius: 12px;
+    border: 2px solid var(--line); background: var(--panel); padding: 10px 14px;
+    font-weight: 700; font-size: 1.15rem; touch-action: manipulation;
   }
-
-  button:focus-visible, input:focus-visible {
-    outline: 4px solid var(--amber);
-    outline-offset: 2px;
-  }
-
+  button:focus-visible, input:focus-visible { outline: 4px solid var(--amber); outline-offset: 2px; }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .btn-opt[aria-pressed="true"] {
-    background: var(--blue);
-    border-color: var(--blue-light);
-    color: #ffffff;
-  }
-
+  .btn-opt[aria-pressed="true"] { background: var(--blue); border-color: var(--blue-light); color: #fff; }
   .btn-sc { text-align: left; min-height: 76px; }
   .btn-sc small { display: block; font-weight: 500; font-size: .9rem; color: var(--muted); }
-  .btn-sc[aria-pressed="true"] {
-    background: var(--green);
-    border-color: #6ee7b7;
-    color: #022c22;
-  }
+  .btn-sc[aria-pressed="true"] { background: var(--green); border-color: #6ee7b7; color: #022c22; }
   .btn-sc[aria-pressed="true"] small { color: #064e3b; }
+  .btn-small { min-height: 56px; font-size: 1.05rem; padding: 8px 14px; }
 
-  .height-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-
-  .height-value {
-    font-size: clamp(2.6rem, 12vw, 4rem);
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    color: var(--text);
-  }
-
-  input[type="range"] {
-    width: 100%;
-    height: 56px;
-    margin: 10px 0 4px;
-    accent-color: var(--blue);
-  }
-
+  .height-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .height-value { font-size: clamp(2.6rem, 12vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; }
+  input[type="range"] { width: 100%; height: 56px; margin: 10px 0 4px; accent-color: var(--blue); }
   input[type="number"] {
-    font: inherit;
-    font-size: 1.4rem;
-    font-weight: 700;
-    width: 100%;
-    min-height: 56px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 2px solid var(--line);
-    background: var(--panel-2);
-    color: var(--text);
+    font: inherit; font-size: 1.4rem; font-weight: 700; width: 100%; min-height: 56px;
+    padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--panel-2); color: var(--text);
   }
-
-  .ibw-line { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .ibw-value {
-    font-size: clamp(2.2rem, 10vw, 3.2rem);
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-    color: var(--green);
-  }
+  label.lbl { display: block; font-weight: 700; margin-top: 10px; }
+  .ibw-line { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .ibw-value { font-size: clamp(2.2rem, 10vw, 3.2rem); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--green); }
 
   .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .result {
-    background: var(--panel-2);
-    border: 2px solid var(--line);
-    border-radius: 14px;
-    padding: 12px;
-  }
+  .result { background: var(--panel-2); border: 2px solid var(--line); border-radius: 14px; padding: 12px; }
   .result .label { font-size: .95rem; font-weight: 700; color: var(--muted); }
-  .result .big {
-    font-size: clamp(2.4rem, 11vw, 3.6rem);
-    font-weight: 900;
-    line-height: 1.05;
-    font-variant-numeric: tabular-nums;
-    color: #ffffff;
-  }
+  .result .big { font-size: clamp(2.4rem, 11vw, 3.6rem); font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; color: #fff; }
   .result .unit { font-size: 1rem; font-weight: 700; color: var(--muted); }
-  .result .sub { font-size: .9rem; color: var(--muted); }
+  .result .sub { font-size: .95rem; color: var(--muted); }
   .result.wide { grid-column: 1 / -1; }
-
   .result.vt .big { color: var(--green); }
   .result.peep .big { color: var(--blue-light); }
+  .result .detail { font-size: 1.05rem; color: var(--text); margin: 2px 0; }
 
-  .notes { list-style: none; padding: 0; margin: 0; }
-  .notes li {
-    background: var(--panel-2);
-    border-left: 4px solid var(--amber);
-    padding: 8px 10px;
-    border-radius: 8px;
-    margin: 8px 0;
-  }
+  .notes { list-style: none; padding: 0; margin: 12px 0 0; }
+  .notes li { background: var(--panel-2); border-left: 4px solid var(--amber); padding: 8px 10px; border-radius: 8px; margin: 8px 0; }
 
-  .alert {
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-weight: 700;
-    margin: 10px 0;
-  }
-  .alert-red { background: #7f1d1d; color: #ffffff; border: 2px solid var(--red); }
-  .alert-amber { background: #78350f; color: #ffffff; border: 2px solid var(--amber); }
-  .alert-blue { background: #0c4a6e; color: #ffffff; border: 2px solid var(--blue-light); }
-
-  .hint { font-size: .95rem; font-weight: 600; min-height: 1.4em; margin: 4px 0 12px; color: var(--muted); }
+  .alert { border-radius: 12px; padding: 12px 14px; font-weight: 700; margin: 10px 0; }
+  .alert-red { background: #7f1d1d; color: #fff; border: 2px solid var(--red); }
+  .alert-amber { background: #78350f; color: #fff; border: 2px solid var(--amber); }
+  .alert-blue { background: #0c4a6e; color: #fff; border: 2px solid var(--blue-light); }
+  .hint { font-size: .95rem; font-weight: 600; min-height: 1.4em; margin: 4px 0 8px; color: var(--muted); }
   .hint-ok { color: var(--green); }
   .hint-amber { color: var(--amber); }
-  .hint-red { color: var(--red); }
 
-  .tag {
-    display: inline-block;
-    font-size: .8rem;
-    font-weight: 700;
-    background: #334155;
-    color: #fde68a;
-    padding: 2px 8px;
-    border-radius: 999px;
-    margin-left: 4px;
-    vertical-align: middle;
-  }
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 1.05rem; }
+  .check-item input { width: 28px; height: 28px; accent-color: var(--green); flex: 0 0 auto; }
+  #pre-status { font-weight: 700; margin-top: 10px; }
 
+  .timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .timer { font-size: clamp(2.6rem, 12vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--blue-light); }
+
+  .tag { display: inline-block; font-size: .8rem; font-weight: 700; background: #334155; color: #fde68a; padding: 2px 8px; border-radius: 999px; margin-left: 4px; vertical-align: middle; }
   .emergency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .emergency-grid button { min-height: 72px; }
 
-  .modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, .94);
-    overflow-y: auto;
-    z-index: 10;
-    padding: env(safe-area-inset-top, 0px) 10px env(safe-area-inset-bottom, 0px);
-  }
+  .modal { position: fixed; inset: 0; background: rgba(2, 6, 23, .94); overflow-y: auto; z-index: 10; padding: env(safe-area-inset-top, 0px) 10px env(safe-area-inset-bottom, 0px); }
   .modal[hidden] { display: none; }
-  .modal-body {
-    background: var(--panel);
-    max-width: 680px;
-    margin: 16px auto;
-    padding: 18px;
-    border-radius: 16px;
-    border: 2px solid var(--line);
-  }
+  .modal-body { background: var(--panel); max-width: 680px; margin: 16px auto; padding: 18px; border-radius: 16px; border: 2px solid var(--line); }
   .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .modal-head h2 { margin: 0; }
   .close-btn { min-height: 56px; padding: 8px 16px; background: var(--blue); border-color: var(--blue-light); color: #fff; }
-
   footer { margin: 18px 0 30px; font-size: .9rem; color: var(--muted); }
 
   @media (max-width: 440px) {
@@ -249,16 +121,17 @@
 
   <header>
     <h1>Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu</h1>
-    <p class="muted">Emergency Vent Assist · Neumovent GraphNet · Người lớn</p>
+    <p class="muted">Neumovent TS · Chế độ VC-A/C (VCV trên máy) · Người lớn</p>
   </header>
 
-  <div class="disclaimer" role="note">
-    Chỉ là gợi ý khởi đầu. Không thay thế phán đoán lâm sàng và hướng dẫn nhà sản xuất. Kiểm tra lại trên máy thực tế trước khi áp dụng.
+  <div class="banner" role="note">
+    <strong>Đề xuất Khoa Cấp cứu BV Quân y 13, đã điều chỉnh theo phản biện. CHƯA PHÊ DUYỆT.</strong><br>
+    Chỉ là gợi ý khởi đầu. Không thay thế phán đoán lâm sàng và hướng dẫn nhà sản xuất. Kiểm tra lại trên máy thực tế trước khi áp dụng. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
   </div>
 
   <main>
 
-    <!-- BƯỚC 1: NHÓM BỆNH NHÂN -->
+    <!-- 1. NHÓM BỆNH NHÂN -->
     <section class="card" aria-labelledby="h-group">
       <h2 id="h-group">1. Nhóm bệnh nhân</h2>
       <div class="btn-row">
@@ -270,122 +143,184 @@
       </div>
     </section>
 
-    <!-- BƯỚC 2: GIỚI TÍNH VÀ CHIỀU CAO -->
-    <section class="card" aria-labelledby="h-sex">
-      <h2 id="h-sex">2. Giới tính và chiều cao</h2>
-      <div class="btn-row" role="group" aria-label="Giới tính">
-        <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
-        <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
-      </div>
+    <div id="adult-only">
 
-      <div class="height-head" style="margin-top:16px">
-        <label for="h-slider" class="muted" style="font-weight:700">Chiều cao</label>
-        <span id="h-val" class="height-value" aria-hidden="true">165 cm</span>
-      </div>
-      <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
-             aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
-      <div class="ibw-line" style="margin-top:12px">
-        <span style="font-weight:700">Cân nặng lý tưởng (IBW)</span>
-        <span id="ibw-val" class="ibw-value" aria-live="polite">—</span>
-      </div>
-      <p id="ibw-note" class="muted" style="font-size:.95rem">Chọn giới tính để tính IBW.</p>
-    </section>
+      <!-- 2. GIỚI TÍNH VÀ CHIỀU CAO -->
+      <section class="card" aria-labelledby="h-sex">
+        <h2 id="h-sex">2. Giới tính và chiều cao</h2>
+        <div class="btn-row" role="group" aria-label="Giới tính">
+          <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
+          <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
+        </div>
+        <div class="height-head">
+          <label for="h-slider" class="muted" style="font-weight:700">Chiều cao (đo nằm nếu không đứng được)</label>
+          <span id="h-val" class="height-value" aria-hidden="true">165 cm</span>
+        </div>
+        <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
+               aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
+        <div class="ibw-line">
+          <span style="font-weight:700">PBW (IBW, Devine)</span>
+          <span id="ibw-val" class="ibw-value" aria-live="polite">—</span>
+        </div>
+        <p id="ibw-note" class="muted" style="font-size:.95rem">Chọn giới tính để tính PBW.</p>
+      </section>
 
-    <!-- BƯỚC 3: TÌNH HUỐNG LÂM SÀNG -->
-    <section class="card" aria-labelledby="h-sc">
-      <h2 id="h-sc">3. Tình huống lâm sàng</h2>
-      <div class="btn-row" role="group" aria-label="Tình huống lâm sàng">
-        <button type="button" class="btn-sc" data-sc="0" aria-pressed="true">
-          Khởi đầu an toàn
-          <small>Mặc định · chưa rõ tổn thương phổi</small>
-        </button>
-        <button type="button" class="btn-sc" data-sc="1" aria-pressed="false">
-          ARDS / viêm phổi nặng
-          <small>Bảo vệ phổi</small>
-        </button>
-        <button type="button" class="btn-sc" data-sc="2" aria-pressed="false">
-          COPD / hen ác tính
-          <small>Chống bẫy khí</small>
-        </button>
-        <button type="button" class="btn-sc" data-sc="3" aria-pressed="false">
-          Chấn thương sọ não
-          <small>Giữ PaCO₂ 35–40 mmHg</small>
-        </button>
-      </div>
-    </section>
+      <!-- 3. TÌNH HUỐNG -->
+      <section class="card" aria-labelledby="h-sc">
+        <h2 id="h-sc">3. Tình huống</h2>
+        <div class="btn-row" role="group" aria-label="Tình huống">
+          <button type="button" class="btn-sc" data-sc="0" aria-pressed="true">
+            VC-A/C khởi đầu
+            <small>Mặc định · chưa rõ tổn thương phổi</small>
+          </button>
+          <button type="button" class="btn-sc" data-sc="1" aria-pressed="false">
+            ARDS / tổn thương phổi lan tỏa
+            <small>Pplat ≤ 30, VT 4–6 mL/kg</small>
+          </button>
+          <button type="button" class="btn-sc" data-sc="2" aria-pressed="false">
+            COPD / hen ác tính
+            <small>Chống bẫy khí, I:E dài</small>
+          </button>
+          <button type="button" class="btn-sc" data-sc="3" aria-pressed="false">
+            Chấn thương sọ não
+            <small>PaCO₂ 35–40 mmHg</small>
+          </button>
+        </div>
+      </section>
 
-    <!-- KẾT QUẢ -->
-    <section class="card" id="results" aria-live="polite" aria-labelledby="h-res">
-      <h2 id="h-res">Thông số gợi ý</h2>
-      <div id="results-body"></div>
-    </section>
+      <!-- 4. KẾT QUẢ CÀI ĐẶT -->
+      <section class="card" id="results" aria-live="polite" aria-labelledby="h-res">
+        <h2 id="h-res">4. Thông số cài đặt khởi đầu</h2>
+        <div id="results-body"></div>
+      </section>
 
-    <!-- KIỂM TRA GIÁ TRỊ ĐANG CÀI -->
-    <section class="card" id="checks" aria-labelledby="h-chk">
-      <h2 id="h-chk">Kiểm tra giá trị đang cài (tùy chọn)</h2>
-      <p class="muted" style="font-size:.95rem">Nhập giá trị bạn đang cài trên máy để đối chiếu với khoảng gợi ý. Không được lưu.</p>
+      <!-- 5. CHECKLIST TRƯỚC KHI NỐI -->
+      <section class="card" aria-labelledby="h-pre">
+        <h2 id="h-pre">5. Kiểm tra trước khi nối bệnh nhân</h2>
+        <div class="check-item"><input type="checkbox" id="pre1"><label for="pre1">Đã chọn nhóm bệnh nhân trên máy (trong 30 giây sau khi bật, nếu không sẽ vào chế độ khẩn cấp)</label></div>
+        <div class="check-item"><input type="checkbox" id="pre2"><label for="pre2">Pin đầy hoặc đã kiểm tra; máy không báo "Defective Battery"</label></div>
+        <div class="check-item"><input type="checkbox" id="pre3"><label for="pre3">Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy bổ sung ở cạnh giường</label></div>
+        <div class="check-item"><input type="checkbox" id="pre4"><label for="pre4">Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật</label></div>
+        <div class="check-item"><input type="checkbox" id="pre5"><label for="pre5">Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở</label></div>
+        <div class="check-item"><input type="checkbox" id="pre6"><label for="pre6">Chiều cao đã đo hoặc ghi nguồn (hồ sơ, người nhà, đo nằm)</label></div>
+        <div class="check-item"><input type="checkbox" id="pre7"><label for="pre7">Đã cài peak flow và trigger theo Operator's Manual của máy tại khoa</label></div>
+        <p id="pre-status" aria-live="polite"></p>
+      </section>
 
-      <label for="in-vt" style="font-weight:700">VT đang cài (mL)</label>
-      <input type="number" id="in-vt" min="100" max="1000" step="10" inputmode="numeric">
-      <p id="msg-vt" class="hint" aria-live="polite"></p>
+      <!-- 6. ĐỐI CHIẾU GIÁ TRỊ ĐANG CÀI -->
+      <section class="card" id="checks" aria-labelledby="h-chk">
+        <h2 id="h-chk">6. Đối chiếu giá trị đang cài</h2>
+        <p class="muted" style="font-size:.95rem">Không được lưu. Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.</p>
 
-      <label for="in-f" style="font-weight:700">Tần số f đang cài (lần/phút)</label>
-      <input type="number" id="in-f" min="4" max="60" step="1" inputmode="numeric">
-      <p id="msg-f" class="hint" aria-live="polite"></p>
+        <label class="lbl" for="in-vt">VT đang cài (mL)</label>
+        <input type="number" id="in-vt" min="100" max="1000" step="10" inputmode="numeric">
+        <p id="msg-vt" class="hint" aria-live="polite"></p>
 
-      <label for="in-peep" style="font-weight:700">PEEP đang cài (cmH₂O)</label>
-      <input type="number" id="in-peep" min="0" max="30" step="1" inputmode="numeric">
-      <p id="msg-peep" class="hint" aria-live="polite"></p>
+        <label class="lbl" for="in-f">Tần số f đang cài (lần/phút)</label>
+        <input type="number" id="in-f" min="4" max="60" step="1" inputmode="numeric">
+        <p id="msg-f" class="hint" aria-live="polite"></p>
 
-      <label for="in-pplat" style="font-weight:700">P_plateau đo được (cmH₂O)</label>
-      <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
-      <div id="alert-pplat" role="alert" hidden></div>
-    </section>
+        <label class="lbl" for="in-peep">PEEP đang cài (cmH₂O)</label>
+        <input type="number" id="in-peep" min="0" max="30" step="1" inputmode="numeric">
+        <p id="msg-peep" class="hint" aria-live="polite"></p>
 
-    <!-- MÔ-ĐUN CẤP CỨU -->
-    <section class="card" aria-labelledby="h-em">
-      <h2 id="h-em">Cấp cứu và tiên lượng</h2>
-      <div class="emergency-grid">
-        <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
-        <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
-        <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
-        <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
-      </div>
-    </section>
+        <label class="lbl" for="in-ppeak">Ppeak đang đọc (cmH₂O)</label>
+        <input type="number" id="in-ppeak" min="0" max="80" step="1" inputmode="numeric">
 
-    <!-- LƯU Ý THIẾT BỊ -->
-    <section class="card" aria-labelledby="h-dev">
-      <h2 id="h-dev">Lưu ý thiết bị</h2>
-      <p class="muted" style="font-size:.95rem">Các mục dưới đây cần đối chiếu với Operator's Manual của Neumovent GraphNet trước khi tin cậy.</p>
-      <ul>
-        <li>Cơ chế thở khẩn cấp khi chưa chọn nhóm bệnh nhân sau khi bật máy <span class="tag">Đối chiếu Operator's Manual</span></li>
-        <li>Chu kỳ tự hiệu chuẩn cảm biến và thông báo tương ứng <span class="tag">Đối chiếu Operator's Manual</span></li>
-        <li>Vị trí và tên phím giữ thở để đo P_plateau <span class="tag">Đối chiếu Operator's Manual</span></li>
-        <li>Dải cài đặt thực tế của Peak flow, Flow trigger và ngưỡng EtCO₂ <span class="tag">Đối chiếu Operator's Manual</span></li>
-        <li>Khử khuẩn: tránh cồn nguyên chất, chất tẩy chứa clo và khí EO với vỏ máy và màn hình cảm ứng <span class="tag">Đối chiếu Operator's Manual</span></li>
-      </ul>
-    </section>
+        <label class="lbl" for="in-pplat">Pplat đo được (cmH₂O)</label>
+        <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
 
+        <label class="lbl" for="in-autopeep">Auto-PEEP đo được (cmH₂O, nếu có)</label>
+        <input type="number" id="in-autopeep" min="0" max="30" step="1" inputmode="numeric">
+
+        <div id="alert-box" role="alert" hidden></div>
+      </section>
+
+      <!-- 7. ĐÁNH GIÁ LẠI SAU CÀI ĐẶT -->
+      <section class="card" aria-labelledby="h-fu">
+        <h2 id="h-fu">7. Đánh giá lại sau 15–30 phút</h2>
+        <p class="muted" style="font-size:.95rem">Bác sĩ trực chỉ giảm VT tối đa 2 lần, mỗi lần 1 mL/kg PBW. Không chỉnh PEEP, chế độ thở hay cai máy. Gọi bác sĩ hồi sức khi vượt quy tắc.</p>
+
+        <div class="timer-row">
+          <span id="timer" class="timer" aria-live="off">15:00</span>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button type="button" id="timer-start" class="btn-small">Bắt đầu đếm 15 phút</button>
+            <button type="button" id="timer-stop" class="btn-small">Đặt lại</button>
+          </div>
+        </div>
+        <p id="timer-msg" class="muted" aria-live="polite"></p>
+
+        <label class="lbl" for="fu-vt">VT thực tế đọc được (mL)</label>
+        <input type="number" id="fu-vt" min="50" max="2500" step="5" inputmode="numeric">
+
+        <label class="lbl" for="fu-spo2">SpO₂ (%)</label>
+        <input type="number" id="fu-spo2" min="50" max="100" step="1" inputmode="numeric">
+
+        <label class="lbl" for="fu-ph">pH động mạch (nếu có khí máu)</label>
+        <input type="number" id="fu-ph" min="6.8" max="7.8" step="0.01" inputmode="decimal">
+
+        <label class="lbl" for="fu-steps">Số lần đã giảm VT trong ca này (0, 1, 2…)</label>
+        <input type="number" id="fu-steps" min="0" max="10" step="1" value="0" inputmode="numeric">
+
+        <div id="fu-out" aria-live="polite" style="margin-top:12px"></div>
+      </section>
+
+      <!-- 8. CẤP CỨU -->
+      <section class="card" aria-labelledby="h-em">
+        <h2 id="h-em">8. Cấp cứu và tiên lượng</h2>
+        <div class="emergency-grid">
+          <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
+          <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
+          <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
+          <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
+        </div>
+      </section>
+
+      <!-- 9. GỌI BÁC SĨ HỒI SỨC -->
+      <section class="card" aria-labelledby="h-call">
+        <h2 id="h-call">9. Gọi bác sĩ hồi sức ngay khi</h2>
+        <ul>
+          <li>SpO₂ dưới mục tiêu và không cải thiện sau xử trí ban đầu.</li>
+          <li>Pplat vẫn trên 30 cmH₂O sau 2 lần giảm VT, hoặc VT đã sát sàn.</li>
+          <li>Ppeak chạm ngưỡng báo động mà không tìm được nguyên nhân nhanh.</li>
+          <li>Huyết áp tụt, cần vận mạch; nghi tràn khí màng phổi áp lực.</li>
+          <li>pH hoặc PaCO₂ bất thường kéo dài; bệnh nhân không đồng bộ với máy.</li>
+          <li>Cần đổi chế độ thở, chỉnh PEEP, huy động phổi hoặc cân nhắc cai máy.</li>
+        </ul>
+      </section>
+
+      <!-- 10. LƯU Ý THIẾT BỊ -->
+      <section class="card" aria-labelledby="h-dev">
+        <h2 id="h-dev">10. Lưu ý thiết bị</h2>
+        <ul>
+          <li>TS không có capnography (EtCO₂). Theo dõi CO₂ bằng khí máu. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+          <li>PRVC, SIMV(PRVC) và VSV là tùy chọn trên TS. Mặc định là VC-A/C. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+          <li>Phím Insp/Exp Pause: giữ hít vào tối đa 7 giây, thở ra tối đa 20 giây. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+          <li>Tự hiệu chuẩn cảm biến mỗi 10 phút, chạy ngay bằng [Ctrl]+[Ctrl]. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+          <li>Chế độ khẩn cấp khi chưa chọn nhóm bệnh nhân trong 30 giây: PCV 10 cmH₂O, 20 lần/phút. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+          <li>Dải cài đặt peak flow, trigger và công thức PBW của máy: <span class="tag">Đối chiếu Operator's Manual</span></li>
+          <li>Khử khuẩn vỏ máy và màn hình: <span class="tag">Đối chiếu Operator's Manual</span></li>
+        </ul>
+      </section>
+
+    </div>
   </main>
 
   <footer>
-    <p>Phiên bản 1.0.0 · Không lưu trữ dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
+    <p>Phiên bản 1.2.0 · Đề xuất, chưa phê duyệt · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
   </footer>
 </div>
 
 <!-- MODAL DOPE -->
 <div id="m-dope" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-dope" hidden>
   <div class="modal-body">
-    <div class="modal-head">
-      <h2 id="t-dope">Checklist DOPE</h2>
-      <button type="button" class="close-btn" data-close>Đóng</button>
-    </div>
-    <p class="muted">Dùng khi SpO₂ tụt hoặc P_max báo động cao.</p>
+    <div class="modal-head"><h2 id="t-dope">Checklist DOPE</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <p class="muted">Dùng khi SpO₂ tụt hoặc Ppeak cao đột ngột.</p>
     <ul>
       <li><strong>D – Displacement:</strong> tuột ống, hoặc ống tụt sâu vào phế quản gốc phải.</li>
-      <li><strong>O – Obstruction:</strong> đờm tắc, gập ống, bệnh nhân cắn ống nội khí quản.</li>
+      <li><strong>O – Obstruction:</strong> đờm tắc, gập ống, bệnh nhân cắn ống.</li>
       <li><strong>P – Pneumothorax:</strong> nghe phổi ngay. Nếu nghi tràn khí màng phổi áp lực, chuẩn bị chọc hút khoang liên sườn II đường trung đòn theo quy trình khoa.</li>
-      <li><strong>E – Equipment:</strong> mất nguồn oxy hoặc khí nén, máy hỏng. Ngắt máy và bóp bóng Ambu có oxy bổ sung.</li>
+      <li><strong>E – Equipment:</strong> mất nguồn O₂ hoặc khí nén, máy hỏng. Ngắt máy và bóp bóng Ambu có oxy bổ sung.</li>
     </ul>
   </div>
 </div>
@@ -393,16 +328,13 @@
 <!-- MODAL LEMON -->
 <div id="m-lemon" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-lemon" hidden>
   <div class="modal-body">
-    <div class="modal-head">
-      <h2 id="t-lemon">LEMON – đặt nội khí quản khó</h2>
-      <button type="button" class="close-btn" data-close>Đóng</button>
-    </div>
+    <div class="modal-head"><h2 id="t-lemon">LEMON – đặt nội khí quản khó</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
     <ul>
-      <li><strong>L – Look externally:</strong> nhìn bên ngoài, tìm dấu hiệu bất thường vùng mặt và cổ.</li>
-      <li><strong>E – Evaluate 3-3-2:</strong> khoảng há miệng khoảng 3 khoát ngón, cằm đến móm khoảng 3 khoát ngón, xương móng đến cằm khoảng 2 khoát ngón.</li>
-      <li><strong>M – Mallampati:</strong> đánh giá độ lộ họng khi bệnh nhân há miệng và không phát âm.</li>
-      <li><strong>O – Obstruction:</strong> tìm tắc nghẽn đường thở hoặc khối u.</li>
-      <li><strong>N – Neck mobility:</strong> đánh giá khả năng vận động cổ.</li>
+      <li><strong>L – Look externally:</strong> hàm nhỏ, cằm lẹm, bướu cổ, chấn thương mặt.</li>
+      <li><strong>E – Evaluate 3-3-2:</strong> há miệng ≥ 3 khoát ngón; cằm đến xương móng ≥ 3; xương móng đến sụn giáp ≥ 2.</li>
+      <li><strong>M – Mallampati:</strong> độ III–IV dự báo nhìn thanh môn khó.</li>
+      <li><strong>O – Obstruction:</strong> thở rít, nuốt khó, ứ đọng đờm dãi.</li>
+      <li><strong>N – Neck mobility:</strong> hạn chế vận động cổ.</li>
     </ul>
   </div>
 </div>
@@ -410,33 +342,27 @@
 <!-- MODAL MOANS -->
 <div id="m-moans" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-moans" hidden>
   <div class="modal-body">
-    <div class="modal-head">
-      <h2 id="t-moans">MOANS – bóp bóng khó</h2>
-      <button type="button" class="close-btn" data-close>Đóng</button>
-    </div>
+    <div class="modal-head"><h2 id="t-moans">MOANS – bóp bóng khó</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
     <ul>
-      <li><strong>M – Mask seal:</strong> khó bịt kín mặt nạ (râu, mất răng, biến dạng mặt).</li>
-      <li><strong>O – Obesity / Obstruction:</strong> béo phì hoặc tắc nghẽn đường thở.</li>
-      <li><strong>A – Age &gt; 55:</strong> tuổi trên 55.</li>
-      <li><strong>N – No teeth:</strong> mất răng.</li>
-      <li><strong>S – Stiff lungs:</strong> phổi cứng, giảm tuân thủ.</li>
+      <li><strong>M – Mask seal:</strong> khó bịt kín mặt nạ (râu, mất răng, biến dạng).</li>
+      <li><strong>O – Obesity / Obstruction:</strong> BMI &gt; 30 hoặc tắc nghẽn đường thở trên.</li>
+      <li><strong>A – Age &gt; 55.</strong></li>
+      <li><strong>N – No teeth:</strong> móm, mất răng.</li>
+      <li><strong>S – Stiff lungs:</strong> phổi cứng, giảm độ giãn nở (ARDS, hen nặng).</li>
     </ul>
-    <p class="muted">Nếu bóp bóng khó, cân nhắc đặt đường thở nâng cao hoặc gọi hỗ trợ sớm.</p>
+    <p class="muted">Nếu bóp bóng khó, gọi hỗ trợ sớm và cân nhắc đường thở nâng cao.</p>
   </div>
 </div>
 
 <!-- MODAL HOP -->
 <div id="m-hop" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-hop" hidden>
   <div class="modal-body">
-    <div class="modal-head">
-      <h2 id="t-hop">HOP – huyết động sau đặt nội khí quản</h2>
-      <button type="button" class="close-btn" data-close>Đóng</button>
-    </div>
-    <p>Khi chuyển từ thở tự nhiên sang thở máy áp lực dương, có thể gặp hạ huyết áp, thiếu oxy và toan máu nặng.</p>
+    <div class="modal-head"><h2 id="t-hop">HOP – huyết động sau đặt NKQ</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <p>Khi chuyển sang thở máy áp lực dương có thể gặp hạ huyết áp, thiếu oxy và toan nặng.</p>
     <ul>
-      <li>Theo dõi huyết áp và nhịp tim ngay sau khi đặt ống và khi bắt đầu thở máy.</li>
-      <li>Chuẩn bị sẵn dịch bolus và thuốc vận mạch (adrenaline hoặc noradrenaline) theo phác đồ khoa.</li>
-      <li>Cân nhắc giảm PEEP và thể tích khi huyết động không ổn định, rồi đánh giá lại.</li>
+      <li>Theo dõi huyết áp và nhịp tim ngay sau đặt ống và khi bắt đầu thở máy.</li>
+      <li>Chuẩn bị dịch bolus và thuốc vận mạch theo phác đồ khoa trước khi tiêm thuốc an thần.</li>
+      <li>Cân nhắc giảm PEEP khi huyết động không ổn định, rồi đánh giá lại.</li>
     </ul>
   </div>
 </div>
@@ -445,153 +371,120 @@
 (function () {
   'use strict';
 
-  // Các khoảng gợi ý. VT tính theo mL/kg IBW. Các khoảng này cần đối chiếu với phác đồ đơn vị.
-  var SCENARIOS = [
+  // Đề xuất Khoa Cấp cứu BV Quân y 13, đã điều chỉnh theo phản biện. CHƯA PHÊ DUYỆT.
+  // Ứng dụng chỉ hiển thị gợi ý. Không gửi, không lưu dữ liệu, không đặt thông số lên máy.
+
+  // Sàn VT tuyệt đối khi giảm VT (mL/kg PBW). Quy ước của ứng dụng, cần khoa xác nhận.
+  var FLOOR_ML_KG = 4;
+  // Tối đa số lần giảm VT mà bác sĩ trực được làm trong một ca. Quy ước đề xuất.
+  var MAX_STEPS = 2;
+
+  var SCEN = [
     {
-      title: 'Khởi đầu an toàn',
-      mode: 'VCV hoặc A/C',
-      vt: [6, 8],
-      f: [12, 16],
-      peep: [5, 5],
-      fio2: '100% ban đầu, hạ dần sau 15–30 phút',
-      spo2: '94–98%',
-      ie: '1:2',
-      pmax: '40 cmH₂O',
-      trigger: '2–3 L/phút',
-      peakFlow: null,
-      etco2: null,
-      notes: ['Chỉ là điểm xuất phát cho bệnh nhân mới đặt nội khí quản, chưa rõ căn nguyên.']
+      title: 'VC-A/C khởi đầu',
+      mode: 'VC-A/C (trên TS hiển thị VCV)',
+      vt: [6, 6],
+      rr: [12, 20], rrDef: 15,
+      ie: 2,
+      peep: [5, 5], peepDef: 5,
+      spo2: [92, 96],
+      fio2: '100% khi cấp cứu, giảm sớm khi SpO₂ đạt đích',
+      notes: [
+        'Điểm xuất phát. Sau 15–30 phút, đo Pplat và khí máu rồi chỉnh.',
+        'VC-A/C cần theo dõi Pplat. Không nâng Pmax để đạt VT.'
+      ]
     },
     {
-      title: 'ARDS / viêm phổi nặng',
-      mode: 'VCV hoặc PRVC',
+      title: 'ARDS / tổn thương phổi lan tỏa',
+      mode: 'VC-A/C (trên TS hiển thị VCV). PRVC chỉ khi máy có tùy chọn',
       vt: [4, 6],
-      f: [20, 28],
-      peep: [8, 14],
-      fio2: 'Chuẩn độ theo bảng PEEP/FiO₂',
-      spo2: '88–95%',
-      ie: '1:1.5 – 1:2',
-      pmax: null,
-      trigger: null,
-      peakFlow: null,
-      etco2: null,
-      plateauWarn: true,
+      rr: [20, 30], rrDef: 25,
+      ie: 2,
+      peep: [8, 14], peepDef: 8,
+      spo2: [88, 95],
+      fio2: 'Chuẩn độ theo bảng PEEP/FiO₂ của đơn vị',
       notes: [
-        'Đo P_plateau bằng thao tác giữ thở cuối thì hít vào theo hướng dẫn máy. Giữ P_plateau dưới 30 cmH₂O.',
-        'Tăng f để bù thông khí phút khi VT thấp.'
+        'Pplat ≤ 30 cmH₂O là mục tiêu chính. Giảm VT nếu vượt.',
+        'RR cao giai đoạn đầu để kiểm soát PaCO₂, điều chỉnh theo pH.',
+        'PEEP cá thể hóa. Không huy động phổi thường quy.'
       ]
     },
     {
       title: 'COPD / hen ác tính',
-      mode: 'VCV hoặc SIMV (VCV) + PSV',
+      mode: 'VC-A/C (trên TS hiển thị VCV)',
       vt: [6, 8],
-      f: [10, 12],
-      peep: [3, 5],
-      fio2: 'Theo SpO₂ mục tiêu',
-      spo2: '88–92%',
-      ie: '1:3 – 1:4',
-      pmax: null,
-      trigger: null,
-      peakFlow: '60–80 L/phút',
-      etco2: null,
+      rr: [8, 12], rrDef: 10,
+      ie: 3.5,
+      peep: [0, 5], peepDef: 3,
+      spo2: [88, 92],
+      fio2: 'Chuẩn độ theo SpO₂ mục tiêu',
       notes: [
-        'Kéo dài thì thở ra để tránh bẫy khí. Theo dõi auto-PEEP.',
-        'Cảnh báo khi CO₂ tăng hoặc ý thức giảm.'
+        'I:E dài (1:3 đến 1:4). Đo auto-PEEP sau khi cài và sau mỗi thay đổi.',
+        'Có bẫy khí: giảm RR trước. Không tăng RR để bù VT.',
+        'Hen không ứ CO₂ có thể đặt SpO₂ 94–98%, theo bác sĩ hồi sức.'
       ]
     },
     {
       title: 'Chấn thương sọ não / tăng ICP',
-      mode: 'VCV (tránh PCV)',
+      mode: 'VC-A/C (trên TS hiển thị VCV). Tránh PCV',
       vt: [6, 8],
-      f: [16, 20],
-      peep: [3, 5],
+      rr: [16, 20], rrDef: 18,
+      ie: 2,
+      peep: [3, 5], peepDef: 4,
+      spo2: [92, 96],
       fio2: 'Theo SpO₂ mục tiêu',
-      spo2: null,
-      ie: null,
-      pmax: null,
-      trigger: null,
-      peakFlow: null,
-      etco2: '35–40 mmHg (mục tiêu PaCO₂ 35–40 mmHg)',
       notes: [
-        'PEEP thấp để tránh cản trở tĩnh mạch về tim, từ đó hạn chế tăng ICP.',
-        'Bật theo dõi EtCO₂ và đặt ngưỡng báo động. Đối chiếu cấu hình thực tế trên máy.'
+        'Mục tiêu PaCO₂ 35–40 mmHg, theo dõi bằng khí máu.',
+        'TS không có EtCO₂ nên không dùng EtCO₂ để theo dõi.'
       ]
     }
   ];
 
   var state = { sex: null, height: 165, scenario: 0, group: 'adult' };
+  var timerId = null;
+  var timerLeft = 900;
 
-  var $ = function (id) { return document.getElementById(id); };
+  function $(id) { return document.getElementById(id); }
+  function sc() { return SCEN[state.scenario]; }
 
-  // Công thức Devine, sàn 30 kg
-  function computeIBW() {
+  function num(id) {
+    var raw = $(id).value;
+    if (raw === '') return null;
+    var n = Number(raw);
+    return isNaN(n) ? null : n;
+  }
+
+  // PBW theo Devine. Sàn 30 kg là quy ước của ứng dụng.
+  function pbw() {
     if (!state.sex) return null;
     var base = state.sex === 'M' ? 50 : 45.5;
     var v = base + 0.91 * (state.height - 152.4);
     return v < 30 ? 30 : v;
   }
 
-  function rangeText(a, b) {
-    return a === b ? String(a) : a + '–' + b;
+  function vtBounds(w) {
+    var s = sc();
+    return { lo: Math.round(s.vt[0] * w), hi: Math.round(s.vt[1] * w) };
   }
 
-  function scenarioVT(sc, w) {
-    return { lo: Math.round(sc.vt[0] * w), hi: Math.round(sc.vt[1] * w) };
+  function rangeTxt(a, b) { return a === b ? String(a) : a + '–' + b; }
+
+  function addAlert(box, cls, text) {
+    var d = document.createElement('div');
+    d.className = 'alert ' + cls;
+    d.textContent = text;
+    box.appendChild(d);
   }
 
-  function renderResults(w) {
-    var box = $('results-body');
-    if (w === null) {
-      box.innerHTML = '<p class="muted">Chọn giới tính để xem thông số gợi ý.</p>';
-      return;
-    }
-    var sc = SCENARIOS[state.scenario];
-    var vt = scenarioVT(sc, w);
-
-    var html = '';
-    html += '<div class="result-grid">';
-    html += '<div class="result vt"><div class="label">VT (thể tích khí lưu thông)</div>' +
-            '<div class="big">' + vt.lo + '–' + vt.hi + '</div>' +
-            '<div class="unit">mL</div>' +
-            '<div class="sub">' + sc.vt[0] + '–' + sc.vt[1] + ' mL/kg IBW</div></div>';
-    html += '<div class="result"><div class="label">Tần số f</div>' +
-            '<div class="big">' + rangeText(sc.f[0], sc.f[1]) + '</div>' +
-            '<div class="unit">lần/phút</div></div>';
-    html += '<div class="result peep"><div class="label">PEEP</div>' +
-            '<div class="big">' + rangeText(sc.peep[0], sc.peep[1]) + '</div>' +
-            '<div class="unit">cmH₂O</div></div>';
-    html += '<div class="result"><div class="label">FiO₂</div>' +
-            '<div class="big" style="font-size:clamp(1.6rem,7vw,2.2rem)">' + sc.fio2.split(' ')[0] + '</div>' +
-            '<div class="sub">' + sc.fio2 + '</div></div>';
-    html += '<div class="result wide"><div class="label">Chế độ và thông số khác</div>' +
-            '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Mode: <strong>' + sc.mode + '</strong></div>';
-    if (sc.spo2) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">SpO₂ mục tiêu: <strong>' + sc.spo2 + '</strong></div>';
-    if (sc.ie) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">I:E: <strong>' + sc.ie + '</strong></div>';
-    if (sc.pmax) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Giới hạn P_max báo động: <strong>' + sc.pmax + '</strong></div>';
-    if (sc.trigger) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Flow trigger: <strong>' + sc.trigger + '</strong> <span class="tag">Đối chiếu máy</span></div>';
-    if (sc.peakFlow) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">Peak flow: <strong>' + sc.peakFlow + '</strong> <span class="tag">Đối chiếu máy</span></div>';
-    if (sc.etco2) html += '<div class="sub" style="font-size:1.05rem;color:#f8fafc">EtCO₂ báo động: <strong>' + sc.etco2 + '</strong> <span class="tag">Đối chiếu máy</span></div>';
-    html += '</div></div>';
-
-    html += '<ul class="notes" style="margin-top:12px">';
-    sc.notes.forEach(function (n) { html += '<li>' + n + '</li>'; });
-    html += '</ul>';
-
-    box.innerHTML = html;
-  }
-
-  function setHint(msgId, text, cls) {
-    var el = $(msgId);
+  function setHint(id, text, cls) {
+    var el = $(id);
     el.textContent = text;
     el.className = 'hint' + (cls ? ' ' + cls : '');
   }
 
-  // Kiểm tra giá trị người dùng nhập so với khoảng gợi ý
-  function checkField(inputId, msgId, lo, hi, unit) {
-    var raw = $(inputId).value;
-    if (raw === '') { setHint(msgId, '', ''); return; }
-    var v = Number(raw);
-    if (lo === null) { setHint(msgId, 'Chọn giới tính để đối chiếu.', ''); return; }
+  function checkRange(inputId, msgId, lo, hi, unit) {
+    var v = num(inputId);
+    if (v === null) { setHint(msgId, '', ''); return; }
     if (v < lo || v > hi) {
       setHint(msgId, 'Ngoài khoảng gợi ý ' + lo + '–' + hi + ' ' + unit + '. Kiểm tra lại trước khi áp dụng.', 'hint-amber');
     } else {
@@ -599,40 +492,237 @@
     }
   }
 
-  function runChecks() {
-    var w = computeIBW();
-    var sc = SCENARIOS[state.scenario];
-
+  // ---------- 4. Thông số cài đặt khởi đầu ----------
+  function renderResults(w) {
+    var box = $('results-body');
     if (w === null) {
-      checkField('in-vt', 'msg-vt', null, null, 'mL');
-    } else {
-      var vt = scenarioVT(sc, w);
-      checkField('in-vt', 'msg-vt', vt.lo, vt.hi, 'mL');
-    }
-    checkField('in-f', 'msg-f', sc.f[0], sc.f[1], 'lần/phút');
-    checkField('in-peep', 'msg-peep', sc.peep[0], sc.peep[1], 'cmH₂O');
-
-    var alertBox = $('alert-pplat');
-    var raw = $('in-pplat').value;
-    if (raw === '') {
-      alertBox.hidden = true;
-      alertBox.innerHTML = '';
-      alertBox.className = '';
+      box.innerHTML = '<p class="muted">Chọn giới tính để xem thông số gợi ý.</p>';
       return;
     }
-    var p = Number(raw);
-    alertBox.hidden = false;
-    if (p >= 30) {
-      alertBox.className = 'alert alert-red';
-      alertBox.textContent = 'P_plateau ≥ 30 cmH₂O. Xem xét giảm VT theo phác đồ đơn vị và đánh giá lại bệnh nhân ngay.';
+    var s = sc();
+    var b = vtBounds(w);
+    var cycle = 60 / s.rrDef;
+    var ti = cycle / (1 + s.ie);
+    var flowMin = Math.ceil((b.lo / 1000) / (ti / 60));
+
+    var html = '<div class="result-grid">';
+    html += '<div class="result vt"><div class="label">VT</div>' +
+      '<div class="big">' + (b.lo === b.hi ? b.lo : b.lo + '–' + b.hi) + '</div>' +
+      '<div class="unit">mL (' + rangeTxt(s.vt[0], s.vt[1]) + ' mL/kg PBW)</div>' +
+      '<div class="sub">Trên TS cài bằng lít: ' + (b.lo / 1000).toFixed(3) +
+      (b.lo === b.hi ? '' : '–' + (b.hi / 1000).toFixed(3)) + ' L</div></div>';
+    html += '<div class="result"><div class="label">Tần số f</div>' +
+      '<div class="big">' + s.rrDef + '</div>' +
+      '<div class="unit">lần/phút (khoảng ' + rangeTxt(s.rr[0], s.rr[1]) + ')</div></div>';
+    html += '<div class="result peep"><div class="label">PEEP</div>' +
+      '<div class="big">' + s.peepDef + '</div>' +
+      '<div class="unit">cmH₂O (khoảng ' + rangeTxt(s.peep[0], s.peep[1]) + ')</div></div>';
+    html += '<div class="result"><div class="label">I:E · Ti</div>' +
+      '<div class="big" style="font-size:clamp(1.8rem,8vw,2.6rem)">1:' + s.ie + '</div>' +
+      '<div class="sub">Ti ≈ ' + ti.toFixed(2) + ' s · Flow tối thiểu ≈ ' + flowMin + ' L/phút</div></div>';
+    html += '<div class="result"><div class="label">Pmax báo động</div>' +
+      '<div class="big" style="font-size:clamp(1.8rem,8vw,2.6rem)">40</div>' +
+      '<div class="sub">Giữ mặc định. Không nâng để đạt VT.</div></div>';
+    html += '<div class="result wide">' +
+      '<div class="detail">Mode: <strong>' + s.mode + '</strong></div>' +
+      '<div class="detail">FiO₂: <strong>' + s.fio2 + '</strong></div>' +
+      '<div class="detail">SpO₂ mục tiêu: <strong>' + s.spo2[0] + '–' + s.spo2[1] + '%</strong></div>' +
+      '<div class="detail">Pplat mục tiêu: <strong>≤ 30 cmH₂O</strong> · ΔP theo dõi: <strong>≤ 15 cmH₂O</strong></div>' +
+      '</div>';
+    html += '</div>';
+    html += '<ul class="notes">';
+    s.notes.forEach(function (n) { html += '<li>' + n + '</li>'; });
+    html += '</ul>';
+    box.innerHTML = html;
+  }
+
+  // ---------- 6. Đối chiếu giá trị đang cài ----------
+  function renderChecks(w) {
+    var s = sc();
+    if (w === null) {
+      setHint('msg-vt', 'Chọn giới tính để đối chiếu VT.', '');
     } else {
-      alertBox.className = 'alert alert-blue';
-      alertBox.textContent = 'P_plateau dưới 30 cmH₂O. Vẫn cần đánh giá theo bệnh cảnh lâm sàng.';
+      var b = vtBounds(w);
+      checkRange('in-vt', 'msg-vt', b.lo, b.hi, 'mL');
+    }
+    checkRange('in-f', 'msg-f', s.rr[0], s.rr[1], 'lần/phút');
+    checkRange('in-peep', 'msg-peep', s.peep[0], s.peep[1], 'cmH₂O');
+
+    var box = $('alert-box');
+    box.innerHTML = '';
+    var pp = num('in-pplat');
+    var pk = num('in-ppeak');
+    var pe = num('in-peep');
+    var ap = num('in-autopeep');
+
+    if (pk !== null && pk >= 40 && pp === null) {
+      addAlert(box, 'alert-amber', 'Ppeak ≥ 40 cmH₂O nhưng chưa có Pplat. Đo Pplat trước khi quyết định giảm VT. Không nâng Pmax.');
+    }
+    if (pk !== null && pp !== null && pp < 30 && pk - pp >= 8) {
+      addAlert(box, 'alert-amber', 'Ppeak cao hơn Pplat từ 8 cmH₂O: ưu tiên tìm sức cản (đờm, gập ống, co thắt phế quản, ống nhỏ). Không nâng Pmax.');
+    }
+    if (pp !== null) {
+      if (pp >= 30) {
+        addAlert(box, 'alert-red', 'Pplat ≥ 30 cmH₂O: xem phần 7 để biết bước giảm VT. Không nâng Pmax.');
+      } else {
+        addAlert(box, 'alert-blue', 'Pplat dưới 30 cmH₂O: giữ VT, vẫn đánh giá theo lâm sàng và khí máu.');
+      }
+      if (pe !== null && pp - pe > 15) {
+        addAlert(box, 'alert-amber', 'ΔP = Pplat − PEEP trên 15 cmH₂O: xem lại PEEP và nguyên nhân giảm độ giãn nở. ΔP là chỉ số theo dõi, chưa được chứng minh là mục tiêu can thiệp.');
+      }
+    }
+    if (ap !== null && ap > 0) {
+      addAlert(box, 'alert-amber', 'Có auto-PEEP: giảm RR trước, kéo dài thì thở ra, xử trí co thắt phế quản. Không tăng RR để bù VT.');
+    }
+    box.hidden = box.childNodes.length === 0;
+  }
+
+  // ---------- 7. Quy tắc giảm VT cho bác sĩ trực ----------
+  // Chỉ giảm VT, tối đa MAX_STEPS lần, mỗi lần 1 mL/kg PBW. Không chỉnh PEEP hay chế độ thở.
+  function pplatRule(msgs, w, vtSet, vtAct, rrSet, pp) {
+    if (pp === null) return;
+    var s = sc();
+    var steps = num('fu-steps') || 0;
+
+    if (pp <= 30) {
+      msgs.push(['alert-blue', 'Pplat ' + pp + ' cmH₂O ≤ 30: giữ VT. Vẫn đánh giá theo lâm sàng và khí máu.']);
+      return;
+    }
+
+    var vtCur = vtAct !== null ? vtAct : vtSet;
+    if (vtCur === null) {
+      msgs.push(['alert-red', 'Pplat > 30. Nhập VT đang cài để tính bước giảm.']);
+      return;
+    }
+
+    var mlkg = vtCur / w;
+    if (steps >= MAX_STEPS || mlkg - 1 < FLOOR_ML_KG) {
+      msgs.push(['alert-red',
+        'Pplat ' + pp + ' cmH₂O > 30 sau ' + steps + ' lần giảm, hoặc VT đã sát sàn ' + FLOOR_ML_KG +
+        ' mL/kg PBW. DỪNG GIẢM. Gọi bác sĩ hồi sức ngay. Không tự chỉnh PEEP hay chế độ thở.']);
+      return;
+    }
+
+    var vtNew = Math.round((mlkg - 1) * w);
+    var rrNew = Math.round(rrSet * vtCur / vtNew);
+    var msg = 'Pplat ' + pp + ' cmH₂O > 30 (lần giảm thứ ' + (steps + 1) + '): đặt VT ' + vtNew +
+      ' mL (' + (mlkg - 1).toFixed(1) + ' mL/kg PBW), RR khoảng ' + rrNew + ' lần/phút. ' +
+      'Đo lại Pplat sau 15–30 phút và cập nhật số lần giảm.';
+
+    if (rrNew > s.rr[1]) {
+      msgs.push(['alert-red', msg + ' RR này vượt khoảng ' + s.rr[1] + ' của tình huống. Gọi bác sĩ hồi sức trước khi tăng RR.']);
+    } else {
+      msgs.push(['alert-red', msg]);
     }
   }
 
+  // ---------- 7. Đánh giá lại sau cài đặt ----------
+  function renderFollowup(w) {
+    var out = $('fu-out');
+    out.innerHTML = '';
+    if (w === null) {
+      out.innerHTML = '<p class="muted">Chọn giới tính trước khi đánh giá lại.</p>';
+      return;
+    }
+    var s = sc();
+    var vtSet = num('in-vt');
+    var vtAct = num('fu-vt');
+    var rrSet = num('in-f');
+    if (rrSet === null) rrSet = s.rrDef;
+    var peep = num('in-peep');
+    var pp = num('in-pplat');
+    var spo2 = num('fu-spo2');
+    var ph = num('fu-ph');
+
+    var msgs = [];
+
+    // SpO₂
+    if (spo2 !== null) {
+      if (spo2 < s.spo2[0]) {
+        msgs.push(['alert-red', 'SpO₂ ' + spo2 + '% dưới mục tiêu ' + s.spo2[0] + '–' + s.spo2[1] + '%. Kiểm tra DOPE ngay (tuột ống, tắc, tràn khí, mất khí). Nếu không cải thiện, gọi bác sĩ hồi sức.']);
+      } else if (spo2 > s.spo2[1]) {
+        msgs.push(['alert-amber', 'SpO₂ ' + spo2 + '% trên mục tiêu. Cân nhắc giảm FiO₂ theo đáp ứng.']);
+      }
+    }
+
+    // VT thực tế so với VT cài
+    if (vtAct !== null && vtSet !== null) {
+      if (vtAct < vtSet * 0.9) {
+        msgs.push(['alert-amber', 'VT thực tế thấp hơn VT cài hơn 10%. Kiểm tra rò rỉ, tắc, bẫy khí trước. Không giữ nguyên chỉ vì SpO₂ đạt.']);
+      } else if (vtAct > vtSet * 1.1) {
+        msgs.push(['alert-amber', 'VT thực tế cao hơn VT cài hơn 10%. Kiểm tra đồng bộ, kích thích, cảm biến.']);
+      }
+    }
+
+    // Pplat và quy tắc giảm VT
+    pplatRule(msgs, w, vtSet, vtAct, rrSet, pp);
+
+    // ΔP
+    if (pp !== null && peep !== null && pp - peep > 15) {
+      msgs.push(['alert-amber', 'ΔP trên 15 cmH₂O: xem lại PEEP và nguyên nhân. Đây là chỉ số theo dõi.']);
+    }
+
+    // pH
+    if (ph !== null) {
+      if (ph < 7.20) {
+        msgs.push(['alert-red', 'pH dưới 7,20: nếu không có bẫy khí, tăng RR từng bước và đánh giá lại sau 30 phút. Gọi bác sĩ hồi sức theo phác đồ đơn vị.']);
+      } else if (ph > 7.45) {
+        msgs.push(['alert-amber', 'pH trên 7,45: giảm RR từng bước để tránh kiềm hô hấp.']);
+      }
+    }
+
+    if (msgs.length === 0) {
+      msgs.push(['alert-blue', 'Chưa có cảnh báo trong các giá trị đã nhập. Đánh giá lại sau 15–30 phút hoặc khi lâm sàng thay đổi.']);
+    }
+    msgs.forEach(function (m) { addAlert(out, m[0], m[1]); });
+  }
+
+  // ---------- 7. Đếm ngược 15 phút ----------
+  function fmtTime(t) {
+    var m = Math.floor(t / 60);
+    var s = t % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function tick() {
+    timerLeft -= 1;
+    $('timer').textContent = fmtTime(Math.max(timerLeft, 0));
+    if (timerLeft <= 0) {
+      clearInterval(timerId);
+      timerId = null;
+      $('timer-msg').textContent = 'Đến lúc đánh giá lại: nhập Pplat, SpO₂, VT thực tế và khí máu nếu có.';
+    }
+  }
+
+  function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerLeft = 900;
+    $('timer').textContent = fmtTime(timerLeft);
+    $('timer-msg').textContent = 'Đang đếm. Đo lại Pplat sau khi bệnh nhân ổn định trên máy.';
+    timerId = setInterval(tick, 1000);
+  }
+
+  function resetTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+    timerLeft = 900;
+    $('timer').textContent = fmtTime(timerLeft);
+    $('timer-msg').textContent = '';
+  }
+
+  // ---------- 5. Checklist trước khi nối ----------
+  function renderPre() {
+    var ids = ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre6', 'pre7'];
+    var n = 0;
+    ids.forEach(function (id) { if ($(id).checked) n++; });
+    $('pre-status').textContent = n === ids.length
+      ? 'Đã xác nhận đủ. Quyết định nối bệnh nhân thuộc bác sĩ trực.'
+      : 'Còn ' + (ids.length - n) + ' mục chưa xác nhận.';
+  }
+
+  // ---------- Render tổng ----------
   function render() {
-    $('h-val') && ($('h-val').textContent = state.height + ' cm');
+    $('h-val').textContent = state.height + ' cm';
     $('h-slider').value = state.height;
     $('h-slider').setAttribute('aria-valuenow', String(state.height));
     $('h-slider').setAttribute('aria-valuetext', state.height + ' centimét');
@@ -649,73 +739,61 @@
 
     var child = state.group === 'child';
     $('child-msg').hidden = !child;
-    $('results').hidden = child;
-    $('checks').hidden = child;
+    $('adult-only').hidden = child;
     if (child) return;
 
-    var w = computeIBW();
+    var w = pbw();
     if (w === null) {
       $('ibw-val').textContent = '—';
-      $('ibw-note').textContent = 'Chọn giới tính để tính IBW.';
+      $('ibw-note').textContent = 'Chọn giới tính để tính PBW.';
     } else {
       $('ibw-val').textContent = w.toFixed(1) + ' kg';
       $('ibw-note').textContent = w === 30
-        ? 'Công thức Devine. Đã áp dụng sàn 30 kg.'
-        : 'Công thức Devine. Không dùng cân nặng thực tế.';
+        ? 'PBW theo Devine. Đã áp dụng sàn 30 kg của ứng dụng.'
+        : 'PBW theo Devine. Không dùng cân nặng thực tế.';
     }
     renderResults(w);
-    runChecks();
+    renderChecks(w);
+    renderFollowup(w);
+    renderPre();
   }
 
-  // Sự kiện: nhóm bệnh nhân
+  // ---------- Sự kiện ----------
   document.querySelectorAll('[data-group]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      state.group = b.getAttribute('data-group');
-      render();
-    });
+    b.addEventListener('click', function () { state.group = b.getAttribute('data-group'); render(); });
   });
-
-  // Sự kiện: giới tính
   document.querySelectorAll('[data-sex]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      state.sex = b.getAttribute('data-sex');
-      render();
-    });
+    b.addEventListener('click', function () { state.sex = b.getAttribute('data-sex'); render(); });
   });
-
-  // Sự kiện: tình huống
   document.querySelectorAll('[data-sc]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      state.scenario = Number(b.getAttribute('data-sc'));
-      render();
-    });
+    b.addEventListener('click', function () { state.scenario = Number(b.getAttribute('data-sc')); render(); });
   });
-
-  // Sự kiện: thanh trượt chiều cao, tính lại theo thời gian thực
   $('h-slider').addEventListener('input', function (e) {
     state.height = Number(e.target.value);
     render();
   });
-
-  // Sự kiện: ô nhập kiểm tra
-  ['in-vt', 'in-f', 'in-peep', 'in-pplat'].forEach(function (id) {
-    $(id).addEventListener('input', runChecks);
+  ['in-vt', 'in-f', 'in-peep', 'in-ppeak', 'in-pplat', 'in-autopeep', 'fu-vt', 'fu-spo2', 'fu-ph', 'fu-steps'].forEach(function (id) {
+    $(id).addEventListener('input', render);
   });
+  ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre6', 'pre7'].forEach(function (id) {
+    $(id).addEventListener('change', renderPre);
+  });
+  $('timer-start').addEventListener('click', startTimer);
+  $('timer-stop').addEventListener('click', resetTimer);
 
-  // Modal cấp cứu
+  // ---------- Modal cấp cứu ----------
   var lastFocus = null;
   function openModal(id) {
     lastFocus = document.activeElement;
     var m = $(id);
     m.hidden = false;
-    var closeBtn = m.querySelector('[data-close]');
-    if (closeBtn) closeBtn.focus();
+    var c = m.querySelector('[data-close]');
+    if (c) c.focus();
   }
   function closeModal(m) {
     m.hidden = true;
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
-
   document.querySelectorAll('[data-open]').forEach(function (b) {
     b.addEventListener('click', function () { openModal(b.getAttribute('data-open')); });
   });
@@ -727,15 +805,12 @@
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal').forEach(function (m) {
-        if (!m.hidden) closeModal(m);
-      });
+      document.querySelectorAll('.modal').forEach(function (m) { if (!m.hidden) closeModal(m); });
     }
   });
 
   render();
 
-  // Đăng ký Service Worker để chạy offline
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('./sw.js').catch(function (err) {
