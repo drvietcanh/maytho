@@ -1,7 +1,7 @@
-﻿{
+{
   "name": "Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)",
   "short_name": "Vent Assist",
-  "description": "Công cụ tham khảo thông số khởi đầu cho máy thở Neumovent GraphNet trong cấp cứu. Chỉ dành cho người lớn. Không thay thế phán đoán lâm sàng.",
+  "description": "Đề xuất hỗ trợ cài đặt máy thở TECME Neumovent TS cho người lớn. Chưa phê duyệt. Không thay thế phán đoán lâm sàng.",
   "lang": "vi",
   "start_url": "./index.html",
   "scope": "./",
