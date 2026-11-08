@@ -1,0 +1,10 @@
+{
+  "name": "emergency-vent-assist",
+  "private": true,
+  "version": "1.5.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build": "node scripts/build.mjs"
+  }
+}

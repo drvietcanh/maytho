@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Hỗ trợ bác sĩ trực cài đặt ban đầu máy thở TECME Neumovent TS cho người lớn.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vent Assist">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
+<style>
+  /* Phiên bản 1.5.0. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  :root {
+    --bg: #0f172a; --panel: #1e293b; --panel-2: #0b1220; --line: #475569;
+    --text: #f8fafc; --muted: #cbd5e1; --blue: #0284c7; --blue-light: #38bdf8;
+    --green: #10b981; --amber: #f59e0b; --red: #ef4444; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1.05rem; line-height: 1.5; min-height: 100vh;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+  }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 12px 12px 110px; }
+  h1 { font-size: 1.35rem; margin: 8px 0 4px; line-height: 1.25; }
+  h2 { font-size: 1.1rem; margin: 0 0 10px; color: var(--blue-light); text-transform: uppercase; letter-spacing: .04em; }
+  p { margin: 6px 0; }
+  ul { margin: 6px 0; padding-left: 1.25rem; }
+  li { margin: 4px 0; }
+  .muted { color: var(--muted); }
+  .small { font-size: .95rem; }
+
+  .banner { background: #422006; border: 2px solid var(--amber); color: #fef3c7; padding: 12px 14px; border-radius: 12px; font-weight: 700; margin-bottom: 12px; }
+  .banner strong { color: #fde68a; }
+  .card { background: var(--panel); border-radius: 16px; padding: 16px; margin: 12px 0; }
+
+  .status-bar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px;
+    background: var(--bg); border-bottom: 2px solid var(--line);
+    padding: 10px 4px; font-weight: 700; font-size: 1rem;
+  }
+  .status-bar .has-red { color: #fecaca; background: #7f1d1d; padding: 0 8px; border-radius: 8px; }
+
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0 0; }
+  .tab { min-height: 56px; font-size: 1rem; padding: 6px 4px; }
+  .tab-on { background: var(--blue); border-color: var(--blue-light); color: #fff; }
+  .tab-state { display: block; font-size: .75rem; font-weight: 600; opacity: .9; }
+
+  button {
+    font: inherit; color: inherit; cursor: pointer; min-height: 60px; border-radius: 12px;
+    border: 2px solid var(--line); background: var(--panel); padding: 10px 14px;
+    font-weight: 700; font-size: 1.1rem; touch-action: manipulation;
+  }
+  button:disabled { opacity: .5; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 4px solid var(--amber); outline-offset: 2px; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-opt[aria-pressed="true"] { background: var(--blue); border-color: var(--blue-light); color: #fff; }
+  .btn-go { background: var(--green); border-color: #6ee7b7; color: #022c22; }
+  .btn-small { min-height: 52px; font-size: 1rem; padding: 8px 14px; }
+  .btn-full { width: 100%; margin-top: 12px; }
+  .btn-intubate { width: 100%; min-height: 68px; font-size: 1.15rem; }
+
+  .nudge { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+  .nudge button { min-width: 68px; min-height: 68px; font-size: 1.8rem; padding: 0; }
+  .height-value { font-size: clamp(2.6rem, 12vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; text-align: center; }
+  input[type="range"] { width: 100%; height: 56px; margin: 10px 0 4px; accent-color: var(--blue); }
+  input[type="number"], select, textarea {
+    font: inherit; font-size: 1.3rem; font-weight: 700; width: 100%; min-height: 54px;
+    padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--panel-2); color: var(--text);
+  }
+  textarea { font-size: 1rem; font-weight: 500; min-height: 180px; resize: vertical; }
+  label.lbl { display: block; font-weight: 700; margin-top: 10px; }
+  .pbw-line { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .pbw-value { font-size: clamp(2.2rem, 10vw, 3.2rem); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--green); }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .result { background: var(--panel-2); border: 2px solid var(--line); border-radius: 14px; padding: 12px; }
+  .result .label { font-size: .95rem; font-weight: 700; color: var(--muted); }
+  .result .big { font-size: clamp(2.2rem, 10vw, 3.4rem); font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; color: #fff; }
+  .result .unit { font-size: 1rem; font-weight: 700; color: var(--muted); }
+  .result .sub { font-size: .95rem; color: var(--muted); }
+  .result.wide { grid-column: 1 / -1; }
+  .result.vt .big { color: var(--green); }
+  .result.peep .big { color: var(--blue-light); }
+  .detail { font-size: 1.05rem; margin: 2px 0; }
+
+  .check-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 1.02rem; }
+  .check-item input { width: 36px; height: 36px; accent-color: var(--green); flex: 0 0 auto; }
+  .check-item input:disabled { cursor: default; }
+  #pre-status { font-weight: 700; margin-top: 10px; }
+
+  .alert { border-radius: 12px; padding: 12px 14px; font-weight: 700; margin: 10px 0; }
+  .alert-red { background: #7f1d1d; color: #fff; border: 2px solid var(--red); }
+  .alert-amber { background: #78350f; color: #fff; border: 2px solid var(--amber); }
+  .alert-blue { background: #0c4a6e; color: #fff; border: 2px solid var(--blue-light); }
+  .field-error { color: #fecaca; font-size: .95rem; font-weight: 700; margin: 4px 0 0; }
+
+  .timer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .timer { font-size: clamp(2.6rem, 12vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--blue-light); }
+  .spec-row { display: flex; align-items: center; gap: 12px; min-height: 60px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
+  .spec-row input { width: 36px; height: 36px; accent-color: var(--green); flex: 0 0 auto; }
+
+  .tag { display: inline-block; font-size: .8rem; font-weight: 700; background: #334155; color: #fde68a; padding: 2px 8px; border-radius: 999px; margin-left: 4px; vertical-align: middle; }
+  .emergency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .emergency-grid button { min-height: 66px; }
+
+  .modal { position: fixed; inset: 0; background: rgba(2, 6, 23, .94); overflow-y: auto; z-index: 10; padding: env(safe-area-inset-top, 0px) 10px env(safe-area-inset-bottom, 0px); }
+  .modal-body { background: var(--panel); max-width: 680px; margin: 16px auto; padding: 18px; border-radius: 16px; border: 2px solid var(--line); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .modal-head h2 { margin: 0; }
+  .close-btn { min-height: 52px; padding: 8px 16px; background: var(--blue); border-color: var(--blue-light); color: #fff; }
+  footer { margin: 18px 0 20px; font-size: .9rem; color: var(--muted); }
+
+  @media (max-width: 440px) {
+    .result-grid, .btn-row, .emergency-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Cài đặt ban đầu máy thở cấp cứu</h1>
+    <p class="muted small">Neumovent TS · VC-A/C (VCV trên máy) · Bác sĩ trực viện</p>
+  </header>
+
+  <div class="banner" role="note">
+    <strong>Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13.</strong><br>
+    Chỉ dành cho người lớn từ 18 tuổi. Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
+  </div>
+
+  <!-- THANH TRẠNG THÁI -->
+  <div class="status-bar" role="region" aria-label="Trạng thái hiện tại">
+    <span id="sb-elapsed">Chưa ghi giờ nối máy</span>
+    <span id="sb-red">0 cảnh báo đỏ</span>
+    <span id="sb-spec">Chuyên ngành: chưa đến</span>
+  </div>
+
+  <!-- THANH TAB -->
+  <nav class="tabs" role="tablist" aria-label="Các bước">
+    <button type="button" class="tab" role="tab" id="tab-btn-0" aria-controls="tab-0" aria-selected="true" data-tab="0">1. Thiết lập<span class="tab-state" id="tab-state-0"></span></button>
+    <button type="button" class="tab" role="tab" id="tab-btn-1" aria-controls="tab-1" aria-selected="false" tabindex="-1" data-tab="1">2. Sau nối<span class="tab-state" id="tab-state-1"></span></button>
+    <button type="button" class="tab" role="tab" id="tab-btn-2" aria-controls="tab-2" aria-selected="false" tabindex="-1" data-tab="2">3. Chuyển giao<span class="tab-state" id="tab-state-2"></span></button>
+  </nav>
+
+  <!-- TAB 1: THIẾT LẬP -->
+  <div id="tab-0" role="tabpanel" aria-labelledby="tab-btn-0">
+
+    <section class="card" aria-labelledby="h-sex">
+      <h2 id="h-sex">Giới tính và chiều cao</h2>
+      <div class="btn-row" role="group" aria-label="Giới tính">
+        <button type="button" class="btn-opt" data-sex="M" aria-pressed="false">Nam</button>
+        <button type="button" class="btn-opt" data-sex="F" aria-pressed="false">Nữ</button>
+      </div>
+
+      <div class="nudge">
+        <button type="button" id="h-minus" aria-label="Giảm 1 cm">−</button>
+        <span id="h-val" class="height-value">165 cm</span>
+        <button type="button" id="h-plus" aria-label="Tăng 1 cm">+</button>
+      </div>
+      <input type="range" id="h-slider" min="130" max="210" step="1" value="165"
+             aria-label="Chiều cao, centimét" aria-valuemin="130" aria-valuemax="210" aria-valuenow="165">
+
+      <label class="lbl" for="h-src">Nguồn chiều cao</label>
+      <select id="h-src">
+        <option value="">Chọn nguồn</option>
+        <option value="nam">Đo khi nằm</option>
+        <option value="ho-so">Hồ sơ</option>
+        <option value="nguoi-nha">Người nhà khai</option>
+        <option value="uoc-luong">Ước lượng (sai số lớn)</option>
+      </select>
+
+      <div class="pbw-line">
+        <span style="font-weight:700">PBW (Devine)</span>
+        <span id="pbw-val" class="pbw-value" aria-live="polite">—</span>
+      </div>
+      <p id="pbw-note" class="muted small">Chọn giới tính để tính PBW.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-now">
+      <h2 id="h-now">Việc cần làm ngay</h2>
+      <ol class="small">
+        <li>Kiểm tra O₂, Ambu và nguồn điện.</li>
+        <li>Kiểm tra mạch thở, vị trí ống và báo động.</li>
+        <li>Ghi nhận số đo sau nối máy và liên lạc Hồi sức.</li>
+      </ol>
+      <button type="button" id="quick-next" class="btn-go btn-full">Chuyển tới bước sau nối</button>
+    </section>
+
+    <section class="card" id="results" aria-labelledby="h-res">
+      <h2 id="h-res">Cài đặt khởi đầu (VC-A/C)</h2>
+      <div id="results-body"></div>
+    </section>
+
+    <section class="card" aria-labelledby="h-profile">
+      <h2 id="h-profile">Bối cảnh lâm sàng</h2>
+      <label class="lbl" for="clinical-profile">Chọn profile để xem mục tiêu theo dõi</label>
+      <select id="clinical-profile"></select>
+      <div id="profile-summary" class="detail" aria-live="polite"></div>
+      <p class="muted small">Profile chỉ hiển thị mục tiêu và điểm cần đánh giá; không tự thay đổi thông số máy. Profile “bản nháp” chưa được bật thành protocol điều trị.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-mode">
+      <h2 id="h-mode">Chế độ sử dụng</h2>
+      <label class="lbl" for="user-mode">Vai trò thao tác</label>
+      <select id="user-mode">
+        <option value="general">Trực cấp cứu — cấu hình an toàn tạm thời</option>
+        <option value="coordinator">Theo dõi/điều phối — không chỉnh máy</option>
+        <option value="expert">Hồi sức chuyên sâu — tùy chỉnh nhanh</option>
+      </select>
+      <label class="check-item" id="expert-ack-row" hidden><input type="checkbox" id="expert-ack"> <span>Tôi là bác sĩ Hồi sức và chịu trách nhiệm rà soát thông số trước khi cài trên máy</span></label>
+      <div id="expert-panel" hidden>
+        <p class="muted small">Chỉ là bảng tính nhanh để ghi chuyển giao. Ứng dụng không kết nối hoặc ghi thông số trực tiếp lên máy.</p>
+        <div class="result-grid">
+          <div><label class="lbl" for="expert-vt">VT (mL/kg PBW)</label><input id="expert-vt" type="number" min="4" max="12" step="0.5"></div>
+          <div><label class="lbl" for="expert-rr">Tần số (lần/phút)</label><input id="expert-rr" type="number" min="1" max="60" step="1"></div>
+          <div><label class="lbl" for="expert-peep">PEEP (cmH₂O)</label><input id="expert-peep" type="number" min="0" max="30" step="1"></div>
+          <div><label class="lbl" for="expert-fio2">FiO₂ (%)</label><input id="expert-fio2" type="number" min="21" max="100" step="1"></div>
+          <div><label class="lbl" for="expert-ie">I:E (mẫu số)</label><input id="expert-ie" type="number" min="0.25" max="5" step="0.25"></div>
+          <div><label class="lbl" for="expert-pmax">Pmax (cmH₂O)</label><input id="expert-pmax" type="number" min="10" max="80" step="1"></div>
+        </div>
+        <p id="expert-summary" class="detail" aria-live="polite"></p>
+        <label class="lbl" for="expert-reason">Lý do điều chỉnh / câu hỏi cần Hồi sức trả lời</label>
+        <textarea id="expert-reason" rows="2" placeholder="Ví dụ: cần đánh giá lại PEEP sau khí máu..."></textarea>
+        <div id="expert-compare" class="small" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="h-pre">
+      <h2 id="h-pre">Kiểm tra trước khi nối bệnh nhân</h2>
+      <p class="muted small"><strong>Ưu tiên sinh mạng và nguồn hỗ trợ</strong></p>
+      <label class="check-item"><input type="checkbox" id="pre1"> <span>Đã chọn nhóm bệnh nhân trên máy trong 30 giây sau khi bật (nếu không, máy vào chế độ khẩn cấp)</span></label>
+      <label class="check-item"><input type="checkbox" id="pre3"> <span>Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy ở cạnh giường</span></label>
+      <p class="muted small"><strong>Máy, mạch thở và báo động</strong></p>
+      <label class="check-item"><input type="checkbox" id="pre2"> <span>Pin và nguồn điện ổn; máy không báo "Defective Battery"</span></label>
+      <label class="check-item"><input type="checkbox" id="pre4"> <span>Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật</span></label>
+      <label class="check-item"><input type="checkbox" id="pre5"> <span>Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở</span></label>
+      <label class="check-item"><input type="checkbox" id="pre6" disabled> <span>Đã chọn nguồn chiều cao (tự động)</span></label>
+      <p class="muted small"><strong>Thông số cần đối chiếu manual</strong></p>
+      <label class="check-item"><input type="checkbox" id="pre7"> <span>Đã đặt peak flow và trigger theo Operator's Manual của máy tại khoa</span></label>
+      <p id="pre-status" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <!-- TAB 2: SAU NỐI -->
+  <div id="tab-1" role="tabpanel" aria-labelledby="tab-btn-1" hidden>
+
+    <section class="card" aria-labelledby="h-intub">
+      <h2 id="h-intub">Ghi giờ nối máy</h2>
+      <button type="button" id="btn-intubate" class="btn-go btn-intubate">Đã nối máy: ghi giờ và bắt đầu đếm 30 phút</button>
+      <p class="muted small">Giờ chỉ lưu trong trang này, không lưu lại khi đóng ứng dụng.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-read">
+      <h2 id="h-read">Số đọc trên máy</h2>
+      <p class="muted small">Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.</p>
+
+      <label class="lbl" for="in-vt-act">VT thực tế (mL)</label>
+      <input type="number" id="in-vt-act" min="50" max="2500" step="5" inputmode="numeric">
+      <p id="in-vt-act-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-peep-act">PEEP đang cài (cmH₂O)</label>
+      <input type="number" id="in-peep-act" min="0" max="30" step="1" inputmode="numeric">
+      <p id="in-peep-act-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-spo2">SpO₂ (%)</label>
+      <input type="number" id="in-spo2" min="50" max="100" step="1" inputmode="numeric">
+      <p id="in-spo2-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-pao2">PaO₂ khí máu (mmHg, nếu có)</label>
+      <input type="number" id="in-pao2" min="20" max="600" step="1" inputmode="numeric">
+      <p id="in-pao2-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-ppeak">Ppeak (cmH₂O)</label>
+      <input type="number" id="in-ppeak" min="0" max="80" step="1" inputmode="numeric">
+      <p id="in-ppeak-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-pplat">Pplat (cmH₂O)</label>
+      <input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric">
+      <p id="in-pplat-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-hr">Nhịp tim (lần/phút)</label>
+      <input type="number" id="in-hr" min="20" max="250" step="1" inputmode="numeric">
+      <p id="in-hr-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-sbp">Huyết áp tâm thu (mmHg)</label>
+      <input type="number" id="in-sbp" min="40" max="300" step="1" inputmode="numeric">
+      <p id="in-sbp-error" class="field-error" role="alert" hidden></p>
+
+      <label class="lbl" for="in-autopeep">Auto-PEEP (cmH₂O, nếu đo được)</label>
+      <input type="number" id="in-autopeep" min="0" max="30" step="1" inputmode="numeric">
+      <p id="in-autopeep-error" class="field-error" role="alert" hidden></p>
+
+      <div class="card-subsection" aria-labelledby="h-snapshot">
+        <h3 id="h-snapshot">Mốc theo dõi</h3>
+        <button type="button" id="save-snapshot" class="btn-small btn-go">Lưu snapshot số đo hiện tại</button>
+        <p id="snapshot-status" class="muted small" aria-live="polite">Chưa có snapshot.</p>
+        <p id="snapshot-quality" class="muted small"></p>
+        <p id="snapshot-trend" class="small"></p>
+        <ol id="snapshot-list" class="small"></ol>
+      </div>
+      <div id="derived-metrics" class="card-subsection" aria-live="polite">
+        <h3>Chỉ số hỗ trợ Hồi sức</h3>
+        <p id="pf-value" class="small">P/F: chưa đủ PaO₂ và FiO₂.</p>
+        <p id="driving-value" class="small">Driving pressure: chưa đủ Pplat và PEEP.</p>
+        <p class="muted small">Chỉ số tham khảo để bàn giao; không tự phân tầng ARDS hay thay thế đánh giá lâm sàng.</p>
+      </div>
+    </section>
+
+    <div id="alert-box" role="region" aria-live="polite" aria-label="Cảnh báo sau nối máy" hidden></div>
+
+    <section class="card" aria-labelledby="h-em">
+      <h2 id="h-em">Cấp cứu và tiên lượng</h2>
+      <div class="emergency-grid">
+        <button type="button" data-open="m-dope" aria-haspopup="dialog">Checklist DOPE</button>
+        <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
+        <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
+        <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB 3: CHUYỂN GIAO -->
+  <div id="tab-2" role="tabpanel" aria-labelledby="tab-btn-2" hidden>
+
+    <section class="card" aria-labelledby="h-timer">
+      <h2 id="h-timer">Đồng hồ chờ bác sĩ chuyên ngành</h2>
+      <p class="small">Bác sĩ chuyên ngành hồi sức cần đến trong 30 phút kể từ khi nối máy.</p>
+      <div class="timer-row">
+        <span id="timer" class="timer" aria-live="off">30:00</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button type="button" id="timer-start" class="btn-small btn-go">Bắt đầu đếm</button>
+          <button type="button" id="timer-reset" class="btn-small">Đặt lại</button>
+        </div>
+      </div>
+      <p id="timer-msg" class="muted small" aria-live="polite"></p>
+
+      <label class="spec-row"><input type="checkbox" id="spec-arrived"> <span>Bác sĩ chuyên ngành đã đến (dừng đồng hồ)</span></label>
+      <p id="spec-time" class="muted small"></p>
+    </section>
+
+    <section class="card" aria-labelledby="h-call-now">
+      <h2 id="h-call-now">Liên lạc hỗ trợ</h2>
+      <button type="button" id="call-specialist" class="btn-go btn-full">Ghi nhận đã liên lạc Hồi sức</button>
+      <p id="call-status" class="muted small" aria-live="polite">Chưa ghi nhận cuộc gọi.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-sbar">
+      <h2 id="h-sbar">Tóm tắt chuyển giao (SBAR)</h2>
+      <textarea id="sbar" readonly aria-label="Tóm tắt chuyển giao"></textarea>
+      <button type="button" id="copy-sbar" class="btn-go btn-full">Sao chép tóm tắt</button>
+      <p id="copy-msg" class="muted small" aria-live="polite"></p>
+      <p class="muted small">Tóm tắt không có họ tên và số bệnh án. Dán vào hồ sơ trước khi đóng ứng dụng.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-call">
+      <h2 id="h-call">Gọi bác sĩ chuyên ngành ngay khi</h2>
+      <ul>
+        <li id="call-spo2-rule">SpO₂ dưới mục tiêu profile và chưa cải thiện sau xử trí ban đầu.</li>
+        <li>Pplat trên 30 cmH₂O.</li>
+        <li>Ppeak từ 40 cmH₂O trở lên mà chưa tìm ra nguyên nhân.</li>
+        <li>Có auto-PEEP, hoặc VT thực tế thấp hơn cài trên 10%.</li>
+        <li>Huyết áp tụt, nghi tràn khí màng phổi áp lực, hoặc bệnh nhân không đồng bộ với máy.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-timeline">
+      <h2 id="h-timeline">Dòng thời gian trong phiên</h2>
+      <ul id="timeline" class="small"><li>Chưa có sự kiện.</li></ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-dev">
+      <h2 id="h-dev">Lưu ý thiết bị</h2>
+      <ul class="small">
+        <li>TS không có capnography (EtCO₂). <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>PRVC, SIMV và VSV là tùy chọn trên TS. Mặc định là VC-A/C. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Phím Insp/Exp Pause: giữ hít vào tối đa 7 giây. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Chế độ khẩn cấp khi chưa chọn nhóm bệnh nhân trong 30 giây: PCV 10 cmH₂O, 20 lần/phút. <span class="tag">Đã xác minh (Technical Manual)</span></li>
+        <li>Peak flow, trigger và công thức PBW của máy: <span class="tag">Đối chiếu Operator's Manual</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <footer>
+    <p>Phiên bản 1.5.0 · Chỉ người lớn · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.</p>
+    <button type="button" id="clear-session" class="btn-small">Xóa dữ liệu phiên này</button>
+    <p id="session-msg" class="muted small" aria-live="polite"></p>
+  </footer>
+</div>
+
+<!-- MODAL DOPE -->
+<div id="m-dope" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-dope" hidden>
+  <div class="modal-body">
+    <div class="modal-head"><h2 id="t-dope">Checklist DOPE</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <p class="muted">Dùng khi SpO₂ tụt hoặc Ppeak cao đột ngột.</p>
+    <ul>
+      <li><strong>D – Displacement:</strong> tuột ống, hoặc ống tụt sâu vào phế quản gốc phải.</li>
+      <li><strong>O – Obstruction:</strong> đờm tắc, gập ống, bệnh nhân cắn ống.</li>
+      <li><strong>P – Pneumothorax:</strong> nghe phổi ngay. Nếu nghi tràn khí màng phổi áp lực, báo bác sĩ chuyên ngành ngay và chuẩn bị chọc hút theo quy trình khoa.</li>
+      <li><strong>E – Equipment:</strong> mất nguồn O₂ hoặc khí nén, máy hỏng. Ngắt máy, bóp bóng Ambu có oxy bổ sung.</li>
+    </ul>
+    <button type="button" class="close-btn btn-full" data-close>Đóng</button>
+  </div>
+</div>
+
+<!-- MODAL LEMON -->
+<div id="m-lemon" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-lemon" hidden>
+  <div class="modal-body">
+    <div class="modal-head"><h2 id="t-lemon">LEMON – đặt NKQ khó</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <ul>
+      <li><strong>L – Look externally:</strong> hàm nhỏ, cằm lẹm, bướu cổ, chấn thương mặt.</li>
+      <li><strong>E – Evaluate 3-3-2:</strong> há miệng ≥ 3 khoát ngón; cằm đến xương móng ≥ 3; xương móng đến sụn giáp ≥ 2.</li>
+      <li><strong>M – Mallampati:</strong> độ III–IV dự báo nhìn thanh môn khó.</li>
+      <li><strong>O – Obstruction:</strong> thở rít, nuốt khó, ứ đọng đờm dãi.</li>
+      <li><strong>N – Neck mobility:</strong> hạn chế vận động cổ.</li>
+    </ul>
+    <button type="button" class="close-btn btn-full" data-close>Đóng</button>
+  </div>
+</div>
+
+<!-- MODAL MOANS -->
+<div id="m-moans" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-moans" hidden>
+  <div class="modal-body">
+    <div class="modal-head"><h2 id="t-moans">MOANS – bóp bóng khó</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <ul>
+      <li><strong>M – Mask seal:</strong> khó bịt kín mặt nạ (râu, mất răng, biến dạng).</li>
+      <li><strong>O – Obesity / Obstruction:</strong> BMI &gt; 30 hoặc tắc nghẽn đường thở trên.</li>
+      <li><strong>A – Age &gt; 55.</strong></li>
+      <li><strong>N – No teeth:</strong> móm, mất răng.</li>
+      <li><strong>S – Stiff lungs:</strong> phổi cứng, giảm độ giãn nở.</li>
+    </ul>
+    <p class="muted">Nếu bóp bóng khó, gọi bác sĩ chuyên ngành sớm.</p>
+    <button type="button" class="close-btn btn-full" data-close>Đóng</button>
+  </div>
+</div>
+
+<!-- MODAL HOP -->
+<div id="m-hop" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-hop" hidden>
+  <div class="modal-body">
+    <div class="modal-head"><h2 id="t-hop">HOP – huyết động sau đặt NKQ</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <p>Khi chuyển sang thở máy áp lực dương có thể gặp hạ huyết áp, thiếu oxy và toan nặng.</p>
+    <ul>
+      <li>Theo dõi huyết áp và nhịp tim ngay sau đặt ống và khi bắt đầu thở máy.</li>
+      <li>Chuẩn bị dịch và thuốc vận mạch theo phác đồ khoa trước khi dùng thuốc an thần.</li>
+    </ul>
+    <button type="button" class="close-btn btn-full" data-close>Đóng</button>
+  </div>
+</div>
+
+<script src="./profiles.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // Đề xuất của Khoa Cấp cứu BV Quân y 13.
+  // Chỉ dành cho người lớn. Ứng dụng chỉ hiển thị gợi ý. Không gửi, không lưu dữ liệu, không đặt thông số lên máy.
+  // Bác sĩ trực không tự giảm VT trong phiên bản này.
+
+  var START = { vtMlKg: 6, rr: 15, ie: 2, peep: 5, fio2: 100, pmax: 40, spo2Min: 92, spo2Max: 96 };
+  var LIMIT_MS = 30 * 60 * 1000;
+  var SESSION_KEY = 'vent-assist-session-v1';
+
+  var state = { sex: null, height: 165, tab: 0, intubatedAt: null, specAt: null, calledAt: null, events: [], measurementAt: {}, snapshots: [], profile: 'baseline', mode: 'general', expertAck: false, expertReason: '', expertSettings: { vtMlKg: 6, rr: 15, peep: 5, fio2: 100, ie: 2, pmax: 40 } };
+  var deadline = null, tickId = null, wakeLock = null;
+  var lastRed = 0;
+
+  function $(id) { return document.getElementById(id); }
+  function currentSettings() {
+    if (state.mode === 'expert' && state.expertAck) return state.expertSettings;
+    return START;
+  }
+  function oxygenTarget() {
+    var profile = (window.VENT_PROFILES || []).find(function (item) { return item.id === state.profile; });
+    return profile && profile.status === 'approved' && profile.spo2Min !== null && profile.spo2Max !== null
+      ? { min: profile.spo2Min, max: profile.spo2Max }
+      : { min: START.spo2Min, max: START.spo2Max };
+  }
+  function renderMode() {
+    var expert = state.mode === 'expert';
+    $('user-mode').value = state.mode || 'general';
+    $('expert-ack-row').hidden = !expert;
+    $('expert-ack').checked = !!state.expertAck;
+    $('expert-panel').hidden = !(expert && state.expertAck);
+    $('h-mode').nextElementSibling && $('h-mode').nextElementSibling.setAttribute('data-mode', state.mode);
+    ['vt', 'rr', 'peep', 'fio2', 'ie', 'pmax'].forEach(function (key) {
+      var input = $('expert-' + key);
+      var value = key === 'vt' ? state.expertSettings.vtMlKg : key === 'fio2' ? state.expertSettings.fio2 : state.expertSettings[key];
+      input.value = value;
+      input.disabled = !(expert && state.expertAck);
+    });
+    var cfg = currentSettings();
+    $('expert-summary').textContent = expert && state.expertAck
+      ? 'Đang dùng: VT ' + cfg.vtMlKg + ' mL/kg PBW · f ' + cfg.rr + ' · PEEP ' + cfg.peep + ' · FiO₂ ' + cfg.fio2 + '% · I:E 1:' + cfg.ie + ' · Pmax ' + cfg.pmax + '.'
+      : '';
+    $('expert-reason').value = state.expertReason || '';
+    var snap = state.snapshots && state.snapshots.length ? state.snapshots[state.snapshots.length - 1].values : null;
+    $('expert-compare').innerHTML = expert && state.expertAck
+      ? '<strong>Đối chiếu nhanh</strong><br>Cấu hình dự kiến: VT ' + (cfg.vtMlKg) + ' mL/kg · f ' + cfg.rr + ' · PEEP ' + cfg.peep + ' · FiO₂ ' + cfg.fio2 + '%<br>Số đo snapshot gần nhất: SpO₂ ' + (snap ? (snap['in-spo2'] || '—') + '%' : '—') + ' · Pplat ' + (snap ? (snap['in-pplat'] || '—') : '—') + ' · PEEP ' + (snap ? (snap['in-peep-act'] || '—') : '—') + '.'
+      : '';
+  }
+  function initProfiles() {
+    var select = $('clinical-profile');
+    (window.VENT_PROFILES || []).forEach(function (profile) {
+      var option = document.createElement('option');
+      option.value = profile.id;
+      option.textContent = profile.name + (profile.status === 'draft' ? ' · BẢN NHÁP' : '');
+      select.appendChild(option);
+    });
+    select.value = state.profile || 'baseline';
+    select.addEventListener('change', function () { state.profile = select.value; renderProfile(); render(); });
+  }
+  function renderProfile() {
+    var profile = (window.VENT_PROFILES || []).find(function (item) { return item.id === state.profile; });
+    if (!profile) return;
+    $('clinical-profile').value = profile.id;
+    $('profile-summary').innerHTML = '<strong>' + profile.target + '</strong><br>' + profile.settings + '<br><span class="muted">' + profile.note + ' Nguồn: ' + profile.source + '.</span>';
+  }
+  function recordEvent(label) {
+    if (!state.events) state.events = [];
+    state.events.push({ at: Date.now(), label: label });
+    if (state.events.length > 30) state.events = state.events.slice(-30);
+  }
+  function renderTimeline() {
+    var box = $('timeline');
+    if (!box) return;
+    box.innerHTML = '';
+    var events = state.events || [];
+    if (!events.length) { box.innerHTML = '<li>Chưa có sự kiện.</li>'; return; }
+    events.slice().reverse().forEach(function (event) {
+      var li = document.createElement('li');
+      li.textContent = clock(event.at) + ' · ' + event.label;
+      box.appendChild(li);
+    });
+  }
+  function saveSession() {
+    try {
+      var inputs = {};
+      ['h-src', 'in-vt-act', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) {
+        inputs[id] = $(id).value;
+      });
+      ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) {
+        inputs[id] = $(id).checked;
+      });
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        savedAt: Date.now(), state: state, deadline: deadline, inputs: inputs
+      }));
+    } catch (err) { /* private browsing or storage disabled: continue in memory */ }
+  }
+  function restoreSession() {
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return false;
+      var saved = JSON.parse(raw);
+      if (!saved || !saved.state || Date.now() - saved.savedAt > 2 * 60 * 60 * 1000) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return false;
+      }
+      state = Object.assign(state, saved.state);
+      deadline = saved.deadline || null;
+      Object.keys(saved.inputs || {}).forEach(function (id) {
+        if ($(id).type === 'checkbox') $(id).checked = !!saved.inputs[id];
+        else $(id).value = saved.inputs[id];
+      });
+      $('session-msg').textContent = 'Đã khôi phục phiên gần nhất trong tab này.';
+      if (deadline && state.specAt === null) {
+        tickId = setInterval(updateTimer, 1000);
+      }
+      return true;
+    } catch (err) {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (ignore) {}
+      return false;
+    }
+  }
+  function clearSession() {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (err) {}
+    state = { sex: null, height: 165, tab: 0, intubatedAt: null, specAt: null, calledAt: null, events: [], measurementAt: {}, snapshots: [], profile: 'baseline', mode: 'general', expertAck: false, expertReason: '', expertSettings: { vtMlKg: 6, rr: 15, peep: 5, fio2: 100, ie: 2, pmax: 40 } };
+    deadline = null;
+    stopTicking();
+    ['h-src', 'in-vt-act', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) { $(id).value = ''; });
+    ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) { $(id).checked = false; });
+    $('session-msg').textContent = 'Đã xóa dữ liệu phiên trên thiết bị này.';
+    setTab(0);
+    render();
+  }
+  function num(id) {
+    var input = $(id);
+    var raw = input.value;
+    if (raw === '') return null;
+    if (typeof input.checkValidity === 'function' && !input.checkValidity()) return null;
+    var n = Number(raw);
+    return isFinite(n) ? n : null;
+  }
+  function renderFieldErrors() {
+    var fields = {
+      'in-vt-act': 'mL', 'in-peep-act': 'cmH₂O', 'in-spo2': '%', 'in-pao2': 'mmHg',
+      'in-ppeak': 'cmH₂O', 'in-pplat': 'cmH₂O', 'in-hr': 'lần/phút',
+      'in-sbp': 'mmHg', 'in-autopeep': 'cmH₂O'
+    };
+    Object.keys(fields).forEach(function (id) {
+      var input = $(id), error = $(id + '-error');
+      if (!input || !error) return;
+      var invalid = input.value !== '' && !input.checkValidity();
+      input.setAttribute('aria-invalid', String(invalid));
+      input.setAttribute('aria-describedby', error.id);
+      error.textContent = invalid
+        ? 'Giá trị phải nằm trong khoảng ' + input.min + '–' + input.max + ' ' + fields[id] + ' và đúng bước nhập.'
+        : '';
+      error.hidden = !invalid;
+    });
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function clock(ms) { var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function fmtDur(ms) {
+    var t = Math.max(0, Math.round(ms / 1000));
+    var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+    return h > 0 ? h + ':' + pad(m) + ':' + pad(s) : pad(m) + ':' + pad(s);
+  }
+  function val(id, unit) {
+    var v = num(id);
+    return v === null ? 'chưa ghi' : v + (unit || '');
+  }
+  function measuredAt(id) {
+    return state.measurementAt && state.measurementAt[id] ? ' lúc ' + clock(state.measurementAt[id]) : '';
+  }
+  function currentMeasurements() {
+    var ids = ['in-spo2', 'in-pao2', 'in-ppeak', 'in-pplat', 'in-peep-act', 'in-vt-act', 'in-autopeep', 'in-hr', 'in-sbp'];
+    var values = {};
+    ids.forEach(function (id) { values[id] = $(id).value; });
+    return values;
+  }
+  function renderSnapshots() {
+    var list = $('snapshot-list');
+    if (!list) return;
+    list.innerHTML = '';
+    var snapshots = state.snapshots || [];
+    $('snapshot-status').textContent = snapshots.length ? 'Đã lưu ' + snapshots.length + '/5 snapshot gần nhất.' : 'Chưa có snapshot.';
+    var currentIds = ['in-spo2', 'in-pplat', 'in-hr', 'in-sbp'];
+    var missing = currentIds.filter(function (id) { return $(id).value === ''; });
+    $('snapshot-quality').textContent = missing.length
+      ? 'Chất lượng dữ liệu: còn thiếu ' + missing.length + '/4 số đo chính (SpO₂, Pplat, HR, HA tâm thu).'
+      : 'Chất lượng dữ liệu: đã đủ 4 số đo chính.';
+    $('snapshot-trend').textContent = '';
+    if (snapshots.length >= 2) {
+      var first = snapshots[0].values, last = snapshots[snapshots.length - 1].values;
+      function delta(id, unit) {
+        if (first[id] === '' || last[id] === '') return '—';
+        return (Number(last[id]) - Number(first[id])) + unit;
+      }
+      $('snapshot-trend').textContent = 'Trend từ ' + clock(snapshots[0].at) + ' → ' + clock(snapshots[snapshots.length - 1].at) + ': SpO₂ ' + delta('in-spo2', '%') + ', Pplat ' + delta('in-pplat', ' cmH₂O') + ', HR ' + delta('in-hr', ' lần/phút') + ', HA tâm thu ' + delta('in-sbp', ' mmHg') + '.';
+    }
+    snapshots.slice().reverse().forEach(function (item) {
+      var li = document.createElement('li');
+      li.textContent = clock(item.at) + ' · SpO₂ ' + (item.values['in-spo2'] || '—') + '% · Pplat ' + (item.values['in-pplat'] || '—') + ' · HR ' + (item.values['in-hr'] || '—');
+      list.appendChild(li);
+    });
+  }
+
+  // PBW theo Devine. Sàn 30 kg là quy ước của ứng dụng.
+  function pbw() {
+    if (!state.sex) return null;
+    var base = state.sex === 'M' ? 50 : 45.5;
+    var v = base + 0.91 * (state.height - 152.4);
+    return v < 30 ? 30 : v;
+  }
+
+  var SRC = { 'nam': 'đo khi nằm', 'ho-so': 'hồ sơ', 'nguoi-nha': 'người nhà khai', 'uoc-luong': 'ước lượng' };
+  function srcTxt() { return SRC[$('h-src').value] || 'chưa ghi nguồn'; }
+  function sexTxt() { return state.sex === 'M' ? 'Nam' : (state.sex === 'F' ? 'Nữ' : 'chưa chọn'); }
+
+  // ---------- Tab ----------
+  function setTab(i) {
+    state.tab = i;
+    [0, 1, 2].forEach(function (k) {
+      var on = k === i;
+      var b = $('tab-btn-' + k);
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+      b.classList.toggle('tab-on', on);
+      $('tab-' + k).hidden = !on;
+    });
+    updateStepStates();
+  }
+
+  function updateStepStates() {
+    var setupDone = !!state.sex && $('h-src').value !== '' && ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].every(function (id) { return $(id).checked; });
+    var afterDone = state.intubatedAt !== null;
+    var labels = [setupDone ? 'Đã xác nhận' : 'Còn mục chưa xác nhận', afterDone ? 'Đã ghi giờ nối' : 'Chưa ghi giờ nối', state.specAt !== null ? 'Đã đến' : 'Đang chờ chuyên ngành'];
+    labels.forEach(function (label, i) {
+      $('tab-state-' + i).textContent = label;
+      var names = ['Thiết lập', 'Sau nối', 'Chuyển giao'];
+      $('tab-btn-' + i).setAttribute('aria-label', 'Bước ' + (i + 1) + ': ' + names[i] + ' — ' + label);
+    });
+  }
+
+  // ---------- Cài đặt khởi đầu ----------
+  function renderSettings(w) {
+    var box = $('results-body');
+    if (w === null) {
+      box.innerHTML = '<p class="muted">Chọn giới tính để xem cài đặt khởi đầu.</p>';
+      return;
+    }
+    var cfg = currentSettings();
+    var vt = Math.round(cfg.vtMlKg * w);
+    var ti = (60 / cfg.rr) / (1 + cfg.ie);
+    var flowMin = Math.ceil((vt / 1000) / (ti / 60));
+
+    box.innerHTML =
+      '<div class="result-grid">' +
+        '<div class="result vt"><div class="label">VT</div>' +
+          '<div class="big">' + vt + '</div>' +
+          '<div class="unit">mL (' + cfg.vtMlKg + ' mL/kg PBW)</div>' +
+          '<div class="sub">Trên TS cài bằng lít: ' + (vt / 1000).toFixed(3) + ' L</div></div>' +
+        '<div class="result"><div class="label">Tần số f</div>' +
+          '<div class="big">' + cfg.rr + '</div><div class="unit">lần/phút</div></div>' +
+        '<div class="result peep"><div class="label">PEEP</div>' +
+          '<div class="big">' + cfg.peep + '</div><div class="unit">cmH₂O</div></div>' +
+        '<div class="result"><div class="label">FiO₂</div>' +
+          '<div class="big" style="font-size:clamp(1.8rem,8vw,2.6rem)">' + cfg.fio2 + '%</div>' +
+          '<div class="sub">Giảm sớm khi SpO₂ đạt đích</div></div>' +
+        '<div class="result"><div class="label">I:E · Ti</div>' +
+          '<div class="big" style="font-size:clamp(1.8rem,8vw,2.6rem)">1:' + cfg.ie + '</div>' +
+          '<div class="sub">Ti ≈ ' + ti.toFixed(2) + ' s · Flow tối thiểu ≈ ' + flowMin + ' L/phút</div></div>' +
+        '<div class="result"><div class="label">Pmax báo động</div>' +
+          '<div class="big" style="font-size:clamp(1.8rem,8vw,2.6rem)">' + cfg.pmax + '</div>' +
+          '<div class="sub">Giữ mặc định. Không nâng để đạt VT.</div></div>' +
+        '<div class="result wide">' +
+          '<div class="detail">Mode: <strong>VC-A/C (trên TS hiển thị VCV)</strong></div>' +
+          '<div class="detail">SpO₂ mục tiêu: <strong>' + oxygenTarget().min + '–' + oxygenTarget().max + '%</strong></div>' +
+          '<div class="detail">Pplat mục tiêu: <strong>≤ 30 cmH₂O</strong></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // ---------- Cảnh báo sau nối ----------
+  function evaluate(w) {
+    var out = [];
+    var cfg = currentSettings();
+    var oxygen = oxygenTarget();
+    var spo2 = num('in-spo2'), ppeak = num('in-ppeak'), pplat = num('in-pplat');
+    var ap = num('in-autopeep'), vtAct = num('in-vt-act'), peepAct = num('in-peep-act');
+    var vtSet = w === null ? null : Math.round(cfg.vtMlKg * w);
+
+    if (ppeak !== null && pplat !== null && pplat > ppeak) {
+      out.push(['alert-amber', 'Dữ liệu chưa hợp lý: Pplat lớn hơn Ppeak. Kiểm tra lại phép đo inspiratory pause và đơn vị nhập.']);
+    }
+    if (pplat !== null && peepAct !== null && pplat < peepAct) {
+      out.push(['alert-amber', 'Dữ liệu chưa hợp lý: Pplat thấp hơn PEEP. Kiểm tra lại hai số đo trước khi bàn giao.']);
+    }
+    if (vtAct !== null && vtSet !== null && vtAct > vtSet * 1.25) {
+      out.push(['alert-amber', 'VT thực tế cao hơn VT dự kiến trên 25%: kiểm tra đơn vị, cài đặt và đo thể tích.']);
+    }
+
+    if (spo2 !== null && spo2 < oxygen.min) {
+      out.push(['alert-red', 'SpO₂ dưới ' + oxygen.min + '%: kiểm tra DOPE ngay. Gọi bác sĩ chuyên ngành.']);
+    }
+    if (ppeak !== null && ppeak >= 40 && pplat === null) {
+      out.push(['alert-amber', 'Ppeak ≥ 40 cmH₂O: kiểm tra DOPE (tắc, gập ống, tuột ống, tràn khí). Không nâng Pmax.']);
+    }
+    if (ppeak !== null && pplat !== null && pplat <= 30 && ppeak - pplat >= 8) {
+      out.push(['alert-amber', 'Ppeak cao hơn Pplat từ 8 cmH₂O: ưu tiên tìm sức cản (đờm, gập ống, co thắt phế quản). Không nâng Pmax.']);
+    }
+    if (pplat !== null) {
+      if (pplat > 30) {
+        out.push(['alert-red', 'Pplat trên 30 cmH₂O: gọi bác sĩ chuyên ngành ngay để đánh giá. Không tự thay đổi VT hoặc nâng Pmax chỉ dựa trên cảnh báo này.']);
+      } else {
+        out.push(['alert-blue', 'Pplat 30 cmH₂O trở xuống: giữ cài đặt, chờ bác sĩ chuyên ngành.']);
+      }
+      if (peepAct !== null && pplat - peepAct > 15) {
+        out.push(['alert-amber', 'ΔP (Pplat − PEEP) trên 15 cmH₂O: ghi vào chuyển giao. Đây là chỉ số theo dõi.']);
+      }
+    }
+    if (ap !== null && ap > 0) {
+      out.push(['alert-red', 'Có auto-PEEP: gọi bác sĩ chuyên ngành. Không tăng RR để bù VT.']);
+    }
+    if (vtAct !== null && vtSet !== null && vtAct < vtSet * 0.9) {
+      out.push(['alert-amber', 'VT thực tế thấp hơn cài trên 10%: kiểm tra rò rỉ, tắc, cuff. Không giữ nguyên chỉ vì SpO₂ đạt.']);
+    }
+    return out;
+  }
+
+  // ---------- Tóm tắt SBAR ----------
+  function buildSbar(w, list) {
+    var cfg = currentSettings();
+    var profile = (window.VENT_PROFILES || []).find(function (item) { return item.id === state.profile; });
+    var vt = Math.round(cfg.vtMlKg * w);
+    var done = 0;
+    ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre6', 'pre7'].forEach(function (id) {
+      if ($(id).checked) done++;
+    });
+    var alertsTxt = list.length
+      ? list.map(function (c) { return '   - ' + c[1]; }).join('\n')
+      : '   Chưa có cảnh báo trong số liệu đã nhập.';
+    var specTxt = state.specAt !== null
+      ? 'đã đến lúc ' + clock(state.specAt)
+      : 'chưa đến, đề nghị đến trong 30 phút kể từ khi nối máy';
+
+    return [
+      'CHUYỂN GIAO THỞ MÁY (SBAR)',
+      '',
+      'S: Người lớn, thở máy VC-A/C (VCV trên TECME Neumovent TS). Nối máy lúc ' +
+        (state.intubatedAt !== null ? clock(state.intubatedAt) : '(chưa ghi giờ)') + '.',
+      '',
+      'B: ' + sexTxt() + ', cao ' + state.height + ' cm (' + srcTxt() + '), PBW ' + w.toFixed(1) + ' kg.',
+      '   Profile theo dõi: ' + (profile ? profile.name : 'chưa chọn') + ' · trạng thái ' + (profile ? profile.status : 'unknown') + '.',
+      '   Cài đặt hiện tại: VT ' + vt + ' mL (' + cfg.vtMlKg + ' mL/kg PBW), f ' + cfg.rr +
+        ', PEEP ' + cfg.peep + ', FiO₂ ' + cfg.fio2 + '%, I:E 1:' + cfg.ie + ', Pmax ' + cfg.pmax + '. Mode ' + (state.mode === 'expert' ? 'Hồi sức chuyên sâu' : 'Trực cấp cứu') + '.',
+      '   Kiểm tra trước nối: ' + done + '/7 mục.',
+      '',
+      'A: SpO₂ ' + val('in-spo2', '%') + measuredAt('in-spo2') +
+        '; PaO₂ ' + val('in-pao2', ' mmHg') + measuredAt('in-pao2') +
+        '; Ppeak ' + val('in-ppeak') + measuredAt('in-ppeak') +
+        '; Pplat ' + val('in-pplat') + measuredAt('in-pplat') +
+        '; PEEP đang cài ' + val('in-peep-act') + measuredAt('in-peep-act') +
+        '; VT thực tế ' + val('in-vt-act', ' mL') + measuredAt('in-vt-act') +
+        '; auto-PEEP ' + val('in-autopeep') + measuredAt('in-autopeep') +
+        '; nhịp tim ' + val('in-hr', ' lần/phút') + measuredAt('in-hr') +
+        '; HA tâm thu ' + val('in-sbp', ' mmHg') + measuredAt('in-sbp') + '.',
+      alertsTxt,
+      '',
+      'R: Bác sĩ chuyên ngành hồi sức: ' + specTxt +
+        '; đã gọi lúc ' + (state.calledAt !== null ? clock(state.calledAt) : '(chưa ghi)') + '.',
+      '   Lý do/câu hỏi điều chỉnh: ' + (state.expertReason || 'chưa ghi') + '.',
+      '   Bác sĩ trực chưa tự chỉnh chế độ thở. Không nâng Pmax.',
+      '   Snapshot gần nhất: ' + ((state.snapshots && state.snapshots.length) ? clock(state.snapshots[state.snapshots.length - 1].at) : 'chưa lưu') + '.',
+      '',
+      '(Không có họ tên hay số bệnh án.)'
+    ].join('\n');
+  }
+
+  // ---------- Cập nhật phần sau nối ----------
+  function renderAfter(w) {
+    var list = w === null ? [] : evaluate(w);
+    var box = $('alert-box');
+    box.innerHTML = '';
+    list.forEach(function (c) {
+      var d = document.createElement('div');
+      d.className = 'alert ' + c[0];
+      d.textContent = c[1];
+      box.appendChild(d);
+    });
+    box.hidden = list.length === 0;
+    lastRed = list.filter(function (c) { return c[0] === 'alert-red'; }).length;
+    box.setAttribute('aria-live', lastRed > 0 ? 'assertive' : 'polite');
+    $('sbar').value = w === null ? 'Chọn giới tính để tạo tóm tắt.' : buildSbar(w, list);
+    var pao2 = num('in-pao2'), fio2 = currentSettings().fio2, pplat = num('in-pplat'), peep = num('in-peep-act');
+    $('pf-value').textContent = pao2 !== null && fio2 > 0 ? 'P/F: ' + Math.round(pao2 / (fio2 / 100)) + ' mmHg (tính từ PaO₂ và FiO₂ đang dùng).' : 'P/F: chưa đủ PaO₂ và FiO₂.';
+    $('driving-value').textContent = pplat !== null && peep !== null ? 'Driving pressure: ' + (pplat - peep) + ' cmH₂O (Pplat − PEEP).' : 'Driving pressure: chưa đủ Pplat và PEEP.';
+    updateStatus();
+  }
+
+  function updateStatus() {
+    $('sb-elapsed').textContent = state.intubatedAt === null
+      ? 'Chưa ghi giờ nối máy'
+      : 'Đã nối ' + fmtDur(Date.now() - state.intubatedAt);
+    var red = $('sb-red');
+    red.textContent = lastRed + ' cảnh báo đỏ';
+    red.classList.toggle('has-red', lastRed > 0);
+    $('sb-spec').textContent = state.specAt === null
+      ? 'Chuyên ngành: chưa đến'
+      : 'Chuyên ngành: đã đến ' + clock(state.specAt);
+  }
+
+  // ---------- Đồng hồ 30 phút (theo mốc thời gian thực) ----------
+  function requestWake() {
+    if (!('wakeLock' in navigator)) return;
+    navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+    }).catch(function () { /* không được phép: bỏ qua */ });
+  }
+  function releaseWake() {
+    if (wakeLock) {
+      wakeLock.release().catch(function () {});
+      wakeLock = null;
+    }
+  }
+
+  function updateTimer() {
+    if (deadline === null) {
+      $('timer').textContent = fmtDur(LIMIT_MS);
+      return;
+    }
+    var left = deadline - Date.now();
+    if (left <= 0) {
+      $('timer').textContent = '00:00';
+      $('timer-msg').textContent = 'Quá 30 phút chưa có bác sĩ chuyên ngành Hồi sức. Báo trực tiếp lãnh đạo Bệnh viện.';
+      stopTicking();
+    } else {
+      $('timer').textContent = fmtDur(left);
+    }
+  }
+
+  function stopTicking() {
+    if (tickId) { clearInterval(tickId); tickId = null; }
+    releaseWake();
+  }
+
+  function startTimer() {
+    if (state.specAt !== null) {
+      $('timer-msg').textContent = 'Bác sĩ chuyên ngành đã đến. Không cần đếm.';
+      return;
+    }
+    deadline = Date.now() + LIMIT_MS;
+    stopTicking();
+    tickId = setInterval(updateTimer, 1000);
+    requestWake();
+    $('timer-msg').textContent = 'Đang đếm. Chuẩn bị tóm tắt SBAR để đọc khi bác sĩ chuyên ngành đến.';
+    updateTimer();
+  }
+
+  function resetTimer() {
+    deadline = null;
+    stopTicking();
+    $('timer-msg').textContent = '';
+    updateTimer();
+  }
+
+  // ---------- Checklist ----------
+  function renderPre() {
+    var auto = $('pre6');
+    auto.checked = $('h-src').value !== '';
+    auto.disabled = true;
+    var ids = ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre6', 'pre7'];
+    var n = 0;
+    ids.forEach(function (id) { if ($(id).checked) n++; });
+    $('pre-status').textContent = n === ids.length
+      ? 'Đã xác nhận đủ. Quyết định nối bệnh nhân thuộc bác sĩ trực.'
+      : 'Còn ' + (ids.length - n) + ' mục chưa xác nhận.';
+  }
+
+  // ---------- Render tổng ----------
+  function render() {
+    renderFieldErrors();
+    $('h-val').textContent = state.height + ' cm';
+    $('h-slider').value = state.height;
+    $('h-slider').setAttribute('aria-valuenow', String(state.height));
+    $('h-slider').setAttribute('aria-valuetext', state.height + ' centimét');
+
+    document.querySelectorAll('[data-sex]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-sex') === state.sex));
+    });
+
+    var w = pbw();
+    if (w === null) {
+      $('pbw-val').textContent = '—';
+      $('pbw-note').textContent = 'Chọn giới tính để tính PBW.';
+    } else {
+      $('pbw-val').textContent = w.toFixed(1) + ' kg';
+      $('pbw-note').textContent = w === 30
+        ? 'PBW theo Devine. Đã áp dụng sàn 30 kg của ứng dụng.'
+        : 'PBW theo Devine. Không dùng cân nặng thực tế.';
+    }
+
+    $('btn-intubate').textContent = state.intubatedAt === null
+      ? 'Đã nối máy: ghi giờ và bắt đầu đếm 30 phút'
+      : 'Đã ghi lúc ' + clock(state.intubatedAt) + ' · Ghi lại giờ';
+
+    $('spec-arrived').checked = state.specAt !== null;
+    $('spec-time').textContent = state.specAt !== null
+      ? 'Bác sĩ chuyên ngành đã đến lúc ' + clock(state.specAt) + '.'
+      : '';
+    $('call-status').textContent = state.calledAt !== null
+      ? 'Đã ghi nhận đã gọi Hồi sức lúc ' + clock(state.calledAt) + '.'
+      : 'Chưa ghi nhận cuộc gọi.';
+    $('call-specialist').textContent = state.calledAt !== null ? 'Ghi nhận liên lạc lại Hồi sức' : 'Ghi nhận đã liên lạc Hồi sức';
+    $('call-spo2-rule').textContent = 'SpO₂ dưới ' + oxygenTarget().min + '% và chưa cải thiện sau xử trí ban đầu.';
+
+    renderSettings(w);
+    renderProfile();
+    renderMode();
+    renderPre();
+    renderAfter(w);
+    renderSnapshots();
+    renderTimeline();
+    updateStepStates();
+    saveSession();
+  }
+
+  // ---------- Sự kiện ----------
+  document.querySelectorAll('[data-sex]').forEach(function (b) {
+    b.addEventListener('click', function () { state.sex = b.getAttribute('data-sex'); render(); });
+  });
+  function setHeight(v) {
+    state.height = Math.min(210, Math.max(130, v));
+    render();
+  }
+  $('h-minus').addEventListener('click', function () { setHeight(state.height - 1); });
+  $('h-plus').addEventListener('click', function () { setHeight(state.height + 1); });
+  $('h-slider').addEventListener('input', function (e) { setHeight(Number(e.target.value)); });
+  $('h-src').addEventListener('change', render);
+  $('user-mode').addEventListener('change', function (e) {
+    state.mode = e.target.value;
+    if (state.mode !== 'expert') state.expertAck = false;
+    render();
+  });
+  $('expert-ack').addEventListener('change', function (e) {
+    state.expertAck = e.target.checked;
+    render();
+  });
+  $('expert-reason').addEventListener('input', function (e) {
+    state.expertReason = e.target.value;
+    render();
+  });
+  [['vt', 'vtMlKg'], ['rr', 'rr'], ['peep', 'peep'], ['fio2', 'fio2'], ['ie', 'ie'], ['pmax', 'pmax']].forEach(function (pair) {
+    $('expert-' + pair[0]).addEventListener('input', function (e) {
+      var value = Number(e.target.value);
+      if (!isFinite(value) || !e.target.checkValidity()) return;
+      state.expertSettings[pair[1]] = value;
+      render();
+    });
+  });
+
+  ['in-vt-act', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      if (!state.measurementAt) state.measurementAt = {};
+      state.measurementAt[id] = Date.now();
+      render();
+    });
+  });
+  $('save-snapshot').addEventListener('click', function () {
+    if (!state.snapshots) state.snapshots = [];
+    state.snapshots.push({ at: Date.now(), values: currentMeasurements() });
+    if (state.snapshots.length > 5) state.snapshots = state.snapshots.slice(-5);
+    recordEvent('Đã lưu snapshot số đo');
+    render();
+  });
+  ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) {
+    $(id).addEventListener('change', render);
+  });
+
+  document.querySelectorAll('[data-tab]').forEach(function (b) {
+    b.addEventListener('click', function () { setTab(Number(b.getAttribute('data-tab'))); });
+    b.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+      e.preventDefault();
+      var current = Number(b.getAttribute('data-tab'));
+      var next = e.key === 'Home' ? 0 : (e.key === 'End' ? 2 : (current + (e.key === 'ArrowRight' ? 1 : 2)) % 3);
+      setTab(next);
+      $('tab-btn-' + next).focus();
+    });
+  });
+  $('quick-next').addEventListener('click', function () { setTab(1); });
+
+  $('btn-intubate').addEventListener('click', function () {
+    if (state.intubatedAt !== null && !window.confirm('Ghi lại mốc nối máy mới?')) return;
+    if (state.intubatedAt !== null) recordEvent('Hiệu chỉnh giờ nối máy');
+    state.intubatedAt = Date.now();
+    if (state.events.length === 0 || state.events[state.events.length - 1].label !== 'Hiệu chỉnh giờ nối máy') recordEvent('Đã ghi giờ nối máy');
+    if (state.specAt === null) startTimer();
+    render();
+  });
+
+  $('spec-arrived').addEventListener('change', function (e) {
+    if (e.target.checked) {
+      state.specAt = Date.now();
+      recordEvent('Bác sĩ chuyên ngành đã đến');
+      deadline = null;
+      stopTicking();
+      $('timer-msg').textContent = 'Bác sĩ chuyên ngành đã đến. Đồng hồ đã dừng.';
+    } else {
+      state.specAt = null;
+      $('timer-msg').textContent = '';
+    }
+    render();
+  });
+  $('call-specialist').addEventListener('click', function () {
+    state.calledAt = Date.now();
+    recordEvent('Đã gọi bác sĩ Hồi sức');
+    render();
+  });
+
+  $('timer-start').addEventListener('click', startTimer);
+  $('timer-reset').addEventListener('click', function () {
+    if (deadline !== null && !window.confirm('Đặt lại đồng hồ chờ?')) return;
+    recordEvent('Đặt lại đồng hồ chờ');
+    resetTimer();
+    render();
+  });
+  $('clear-session').addEventListener('click', function () {
+    if (window.confirm('Xóa toàn bộ dữ liệu của phiên hiện tại?')) clearSession();
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') {
+      if (tickId) requestWake();
+      updateTimer();
+      updateStatus();
+    }
+  });
+
+  // ---------- Sao chép SBAR ----------
+  function copySbar() {
+    var ta = $('sbar');
+    var msg = $('copy-msg');
+    function done() {
+      msg.textContent = 'Đã sao chép. Dán vào hồ sơ trước khi đóng ứng dụng, vì ứng dụng không lưu dữ liệu.';
+    }
+    function fallback() {
+      ta.removeAttribute('readonly');
+      ta.focus();
+      ta.select();
+      ta.setAttribute('readonly', '');
+      msg.textContent = 'Đã chọn sẵn nội dung. Sao chép thủ công rồi dán vào hồ sơ.';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(done, fallback);
+    } else {
+      fallback();
+    }
+  }
+  $('copy-sbar').addEventListener('click', copySbar);
+
+  // ---------- Modal cấp cứu ----------
+  var lastFocus = null;
+  function openModal(id) {
+    lastFocus = document.activeElement;
+    var m = $(id);
+    m.hidden = false;
+    var c = m.querySelector('[data-close]');
+    if (c) c.focus();
+  }
+  function closeModal(m) {
+    m.hidden = true;
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+  function trapModalFocus(m, e) {
+    if (e.key !== 'Tab' || m.hidden) return;
+    var focusable = Array.prototype.slice.call(m.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(function (el) { return !el.disabled; });
+    if (!focusable.length) return;
+    var first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  document.querySelectorAll('[data-open]').forEach(function (b) {
+    b.addEventListener('click', function () { openModal(b.getAttribute('data-open')); });
+  });
+  document.querySelectorAll('.modal').forEach(function (m) {
+    m.addEventListener('click', function (e) { if (e.target === m) closeModal(m); });
+    m.querySelectorAll('[data-close]').forEach(function (c) {
+      c.addEventListener('click', function () { closeModal(m); });
+    });
+  });
+  document.addEventListener('keydown', function (e) {
+    document.querySelectorAll('.modal').forEach(function (m) { trapModalFocus(m, e); });
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal').forEach(function (m) { if (!m.hidden) closeModal(m); });
+    }
+  });
+
+  // ---------- Khởi động ----------
+  initProfiles();
+  restoreSession();
+  setTab(state.tab || 0);
+  render();
+  updateTimer();
+  setInterval(updateStatus, 1000);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function (err) {
+        console.warn('Không đăng ký được Service Worker:', err);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>

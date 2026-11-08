@@ -1,0 +1,44 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "Cài đặt ban đầu máy thở cấp cứu" [level=1] [ref=e4]
+    - paragraph [ref=e5]: Neumovent TS · VC-A/C (VCV trên máy) · Bác sĩ trực viện
+  - note [ref=e6]:
+    - strong [ref=e7]: Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13.
+    - text: Chỉ dành cho người lớn từ 18 tuổi. Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
+  - region "Trạng thái hiện tại" [ref=e8]:
+    - generic [ref=e9]: Chưa ghi giờ nối máy
+    - generic [ref=e10]: 0 cảnh báo đỏ
+    - generic [ref=e11]: "Chuyên ngành: chưa đến"
+  - tablist "Các bước" [ref=e12]:
+    - tab "1. Thiết lập" [ref=e13] [cursor=pointer]
+    - tab "2. Sau nối" [active] [selected] [ref=e14] [cursor=pointer]
+    - tab "3. Chuyển giao" [ref=e15] [cursor=pointer]
+  - tabpanel "2. Sau nối" [ref=e129]:
+    - region [ref=e130]:
+      - heading "Ghi giờ nối máy" [level=2] [ref=e131]
+      - 'button "Đã nối máy: ghi giờ và bắt đầu đếm 30 phút" [ref=e132] [cursor=pointer]'
+      - paragraph [ref=e133]: Giờ chỉ lưu trong trang này, không lưu lại khi đóng ứng dụng.
+    - region [ref=e134]:
+      - heading "Số đọc trên máy" [level=2] [ref=e135]
+      - paragraph [ref=e136]: Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.
+      - generic [ref=e137]: VT thực tế (mL)
+      - spinbutton "VT thực tế (mL)" [ref=e138]
+      - generic [ref=e139]: PEEP đang cài (cmH₂O)
+      - spinbutton "PEEP đang cài (cmH₂O)" [ref=e140]
+      - generic [ref=e141]: SpO₂ (%)
+      - spinbutton "SpO₂ (%)" [ref=e142]
+      - generic [ref=e143]: Ppeak (cmH₂O)
+      - spinbutton "Ppeak (cmH₂O)" [ref=e144]
+      - generic [ref=e145]: Pplat (cmH₂O)
+      - spinbutton "Pplat (cmH₂O)" [ref=e146]
+      - generic [ref=e147]: Auto-PEEP (cmH₂O, nếu đo được)
+      - spinbutton "Auto-PEEP (cmH₂O, nếu đo được)" [ref=e148]
+    - region [ref=e149]:
+      - heading "Cấp cứu và tiên lượng" [level=2] [ref=e150]
+      - generic [ref=e151]:
+        - button "Checklist DOPE" [ref=e152] [cursor=pointer]
+        - button "LEMON (đặt NKQ khó)" [ref=e153] [cursor=pointer]
+        - button "MOANS (bóp bóng khó)" [ref=e154] [cursor=pointer]
+        - button "HOP (huyết động)" [ref=e155] [cursor=pointer]
+  - contentinfo [ref=e61]:
+    - paragraph [ref=e62]: Phiên bản 1.5.0 · Chỉ người lớn · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.

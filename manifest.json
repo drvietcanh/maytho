@@ -1,0 +1,20 @@
+{
+  "name": "Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)",
+  "short_name": "Vent Assist",
+  "description": "Đề xuất hỗ trợ cài đặt máy thở TECME Neumovent TS cho người lớn. Chưa phê duyệt. Không thay thế phán đoán lâm sàng.",
+  "lang": "vi",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

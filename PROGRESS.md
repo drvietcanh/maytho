@@ -1,0 +1,159 @@
+# Nhật ký tiến độ
+
+## 08/11/2026 — P0/P1 kỹ thuật
+
+### Đã làm
+
+- Đồng bộ Service Worker lên `v1.5.0`.
+- Tạo icon SVG và PNG 192/512.
+- Chuẩn hóa README theo TECME Neumovent TS.
+- Chặn input ngoài `min/max/step` khỏi logic lâm sàng.
+- Hiển thị lỗi input với `aria-invalid` và `aria-describedby`.
+- Thêm phục hồi phiên tạm bằng `sessionStorage`, TTL 2 giờ và nút xóa phiên.
+- Thêm điều hướng tab bằng bàn phím.
+- Thêm trạng thái bước và dòng thời gian trong phiên.
+
+### Kiểm tra
+
+- Trình duyệt tải `index.html`, `sw.js`, `manifest.json`, icon SVG và PNG thành công trên localhost.
+- `SpO₂=150` bị đánh dấu invalid và không tạo cảnh báo.
+- Không ghi nhận lỗi console trong smoke load.
+- Responsive test tại 360/390/768/1024/1440 px: không tràn ngang.
+- Offline reload sau lần tải đầu: trang vẫn mở và hiển thị đúng.
+- App shell và icon SVG/PNG trả về 200 trong smoke test.
+
+### Giới hạn còn lại
+
+- Chưa có test runner tự động trong repository.
+- Chưa kiểm thử Safari/iOS và Android thiết bị thật.
+- Protocol lâm sàng, mục tiêu SpO₂, timer 30 phút và thông tin thiết bị vẫn cần người có thẩm quyền phê duyệt.
+- Chưa triển khai profile bệnh lý.
+
+## 08/11/2026 — Hoàn tất vòng kỹ thuật và release smoke
+
+### Đã làm
+
+- Sửa nhãn ARIA của stepper để giữ tên bước và trạng thái.
+- Thêm focus trap cho modal.
+- Điều chỉnh live region cảnh báo theo mức độ.
+- Thêm `package.json`, test runner Node và script build tĩnh.
+- Thêm 4 smoke/unit tests.
+- Thêm thư mục `dist/` được tạo từ build.
+
+### Kết quả kiểm tra
+
+- `npm test`: 4/4 test đạt.
+- `npm run build`: đạt, tạo đủ app shell và icon trong `dist/`.
+- Release smoke trên bản `dist`: không lỗi console.
+- Responsive 360/390/768/1024/1440 px: không tràn ngang.
+- Điều hướng stepper bằng mũi tên: đạt.
+- Modal mở, focus vào nút đóng và Escape: đạt.
+- Offline reload sau lần tải đầu: trang vẫn mở.
+
+### Còn chờ phê duyệt
+
+- Profile bệnh lý và mọi thay đổi protocol điều trị.
+- Xác minh Operator's Manual trên máy thực tế.
+- Pilot Safari iOS/Chrome Android trên thiết bị bệnh viện.
+
+## 08/11/2026 — Profile mặc định chờ duyệt
+
+- Thêm `profiles.js` với bốn profile: khởi đầu chung, ARDS, COPD/nguy cơ giữ CO₂, hen nặng.
+- Profile chỉ hiển thị mục tiêu theo dõi, cảnh báo và nguồn; không tự thay đổi VT/RR/PEEP/FiO₂.
+- COPD hiển thị mục tiêu SpO₂ 88–92% theo GOLD.
+- ARDS hiển thị khoảng VT 4–8 mL/kg PBW và Pplat < 30 cmH₂O theo ATS/ESICM/SCCM; mục tiêu oxy vẫn để protocol đơn vị xác định.
+- ARDS/COPD/hen được gắn `draft`; chưa được coi là protocol production cho đến khi người phê duyệt rà soát.
+- Smoke test bản `dist`: chọn profile, hiển thị summary và không có lỗi console.
+- Logic cảnh báo SpO₂ đổi theo profile có đích rõ (baseline 92–96%, COPD 88–92%); profile ARDS/hen vẫn yêu cầu protocol Hồi sức cho đích oxy.
+
+## 08/11/2026 — Tách mode người dùng
+
+- Mode mặc định “Trực cấp cứu — cấu hình an toàn tạm thời”: giữ thông số khởi đầu, ưu tiên cảnh báo và chờ Hồi sức.
+- Mode “Hồi sức chuyên sâu — tùy chỉnh nhanh”: yêu cầu xác nhận vai trò, cho chỉnh VT/RR/PEEP/FiO₂/I:E/Pmax để tính và chuyển giao; không kết nối máy.
+- Ghi mode và thông số hiện tại vào SBAR.
+- Không cho profile chuyên sâu tự sinh y lệnh hoặc tự thay đổi thông số thiết bị.
+
+## 08/11/2026 — Vai trò và workflow trực viện
+
+- Thêm mode “Theo dõi/điều phối — không chỉnh máy”.
+- Thêm nút “Gọi bác sĩ Hồi sức ngay”, ghi giờ gọi vào timeline và SBAR.
+- Thêm nhịp tim và huyết áp tâm thu vào số đọc sau nối và SBAR.
+- Chia checklist trước nối thành nhóm ưu tiên sinh mạng, máy/mạch thở/báo động và manual.
+- Mode chuyên sâu tiếp tục yêu cầu xác nhận vai trò và chỉ là bảng tính/chuyển giao.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 1: giảm lỗi thao tác trong ca cấp cứu
+
+- Thêm khối “Việc cần làm ngay” và nút chuyển nhanh sang bước sau nối.
+- Sửa lưu mode để mode điều phối không bị chuyển nhầm về mode chung khi render lại.
+- Sửa đơn vị lỗi nhập cho nhịp tim và huyết áp; thông báo không còn dùng nhầm cmH₂O.
+- Đổi nút “Gọi bác sĩ Hồi sức ngay” thành “Ghi nhận đã liên lạc Hồi sức” để phản ánh đúng phạm vi ứng dụng (không tự thực hiện cuộc gọi).
+- Quy tắc SpO₂ trong danh sách gọi hỗ trợ hiển thị theo mục tiêu đang có hiệu lực trong app; profile nháp không tự thay đổi ngưỡng cảnh báo.
+- Thêm xác nhận khi ghi đè giờ nối máy hoặc đặt lại đồng hồ chờ; các thao tác được ghi vào timeline.
+- Kiểm thử web thật bằng Playwright: nút chuyển bước, giữ mode điều phối, ghi nhận liên lạc và quy tắc SpO₂ đều hoạt động.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 2 bước đầu: truy vết số đo
+
+- Mỗi số đo sau nối (SpO₂, Ppeak, Pplat, PEEP, VT, auto-PEEP, nhịp tim, HA tâm thu) lưu thời điểm nhập gần nhất trong phiên.
+- SBAR hiển thị thời điểm tương ứng để bác sĩ nhận biết dữ liệu mới/cũ khi bàn giao.
+- Timestamp chỉ là truy vết nhập liệu, không được diễn giải là thời điểm đo thực tế nếu người dùng nhập trễ.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 2: snapshot chuyển giao
+
+- Thêm lưu tối đa 5 snapshot số đo sau nối máy, mỗi snapshot có timestamp và nhóm giá trị chính.
+- Hiển thị lịch sử snapshot ngắn ngay cạnh vùng nhập số đo để so sánh các mốc trước/sau xử trí.
+- SBAR đưa timestamp snapshot gần nhất vào phần chuyển giao.
+- Snapshot chỉ là bản ghi hỗ trợ bàn giao; không tự suy diễn đáp ứng điều trị hoặc tạo y lệnh.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 2: trend và chất lượng dữ liệu
+
+- Thêm so sánh snapshot đầu/cuối cho SpO₂, Pplat, nhịp tim và HA tâm thu.
+- Hiển thị chênh lệch theo đơn vị tương ứng, không gắn nhãn đáp ứng điều trị.
+- Thêm thông báo chất lượng dữ liệu khi còn thiếu 4 số đo chính.
+- Giữ nguyên nguyên tắc: dữ liệu chỉ hỗ trợ bác sĩ bàn giao, không tự tạo y lệnh.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 3 bước đầu: chỉ số hỗ trợ Hồi sức
+
+- Thêm trường PaO₂ khí máu tùy chọn, có kiểm tra khoảng giá trị và timestamp.
+- Tính P/F chỉ khi PaO₂ và FiO₂ hợp lệ; hiển thị như chỉ số tham khảo, không tự phân tầng ARDS.
+- Tính driving pressure từ Pplat − PEEP khi đủ dữ liệu.
+- Đưa PaO₂ vào SBAR cùng timestamp.
+- Gắn cảnh báo rõ rằng các chỉ số không thay thế đánh giá lâm sàng hoặc quyết định của bác sĩ Hồi sức.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 3: kiểm tra tính hợp lý dữ liệu
+
+- Cảnh báo khi Pplat lớn hơn Ppeak.
+- Cảnh báo khi Pplat thấp hơn PEEP, tạo driving pressure âm.
+- Cảnh báo khi VT thực tế cao hơn VT dự kiến trên 25%.
+- Các cảnh báo chỉ yêu cầu xác minh phép đo/đơn vị/cài đặt; ứng dụng không tự thay đổi thông số máy.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 08/11/2026 — Sprint 3: workspace Hồi sức chuyên sâu
+
+- Thêm bảng đối chiếu nhanh giữa cấu hình dự kiến và snapshot gần nhất.
+- Thêm trường “Lý do điều chỉnh / câu hỏi cần Hồi sức trả lời”.
+- Đưa lý do này vào SBAR để tách rõ dữ liệu bàn giao với quyết định chuyên sâu.
+- Chỉ hiển thị workspace khi chọn mode Hồi sức và xác nhận trách nhiệm; không kết nối hoặc ghi trực tiếp lên máy.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+
+## 09/11/2026 — Cổng phê duyệt profile lâm sàng
+
+- Thêm [CLINICAL_APPROVAL_MATRIX.md](CLINICAL_APPROVAL_MATRIX.md) với quần thể, nội dung, nguồn, người duyệt, trạng thái và điều kiện bật production.
+- Giữ baseline ở `TECHNICALLY_VERIFIED`; ARDS/COPD/hen vẫn `DRAFT`.
+- SBAR ghi profile đang chọn và trạng thái phê duyệt để tránh hiểu nhầm profile nháp là protocol.
+- Không bật profile production khi chưa có SOP bệnh viện, đối chiếu Operator’s Manual, người duyệt và ca mô phỏng.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.
+- `git diff --check` không chạy được vì thư mục hiện tại không có metadata Git; không phát hiện lỗi whitespace qua build/test.
+
+## 09/11/2026 — Rà soát đa vai trò và sửa lỗi release
+
+- Audit theo vai trò Hồi sức, Cấp cứu/nội, điều dưỡng, kỹ sư thiết bị, an toàn người bệnh, UX/accessibility và QA.
+- Phát hiện lỗi cú pháp JavaScript ở bảng đối chiếu mode Hồi sức bằng smoke test trình duyệt; đã sửa và xác minh lại inline JS.
+- Sửa câu cảnh báo Pplat cao để không tạo ấn tượng phải giữ nguyên cài đặt; chuyển thành yêu cầu gọi Hồi sức đánh giá và không tự nâng Pmax.
+- Smoke test thật đạt: P/F, driving pressure và responsive 360/390/768/1024/1440 không tràn ngang.
+- `npm test`: 4/4 đạt; `npm run build`: đạt.

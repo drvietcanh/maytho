@@ -1,0 +1,56 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "Cài đặt ban đầu máy thở cấp cứu" [level=1] [ref=e4]
+    - paragraph [ref=e5]: Neumovent TS · VC-A/C (VCV trên máy) · Bác sĩ trực viện
+  - note [ref=e6]:
+    - strong [ref=e7]: Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13.
+    - text: Chỉ dành cho người lớn từ 18 tuổi. Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
+  - region "Trạng thái hiện tại" [ref=e8]:
+    - generic [ref=e9]: Chưa ghi giờ nối máy
+    - generic [ref=e10]: 0 cảnh báo đỏ
+    - generic [ref=e11]: "Chuyên ngành: chưa đến"
+  - tablist "Các bước" [ref=e12]:
+    - 'tab "Bước 1: Thiết lập — Còn mục chưa xác nhận" [ref=e13] [cursor=pointer]':
+      - text: 1. Thiết lập
+      - generic [ref=e14]: Còn mục chưa xác nhận
+    - 'tab "Bước 2: Sau nối — Chưa ghi giờ nối" [active] [selected] [ref=e15] [cursor=pointer]':
+      - text: 2. Sau nối
+      - generic [ref=e16]: Chưa ghi giờ nối
+    - 'tab "Bước 3: Chuyển giao — Đang chờ chuyên ngành" [ref=e17] [cursor=pointer]':
+      - text: 3. Chuyển giao
+      - generic [ref=e18]: Đang chờ chuyên ngành
+  - 'tabpanel "Bước 2: Sau nối — Chưa ghi giờ nối" [ref=e84]':
+    - region [ref=e85]:
+      - heading "Ghi giờ nối máy" [level=2] [ref=e86]
+      - 'button "Đã nối máy: ghi giờ và bắt đầu đếm 30 phút" [ref=e87] [cursor=pointer]'
+      - paragraph [ref=e88]: Giờ chỉ lưu trong trang này, không lưu lại khi đóng ứng dụng.
+    - region [ref=e89]:
+      - heading "Số đọc trên máy" [level=2] [ref=e90]
+      - paragraph [ref=e91]: Chỉ đọc Pplat khi bệnh nhân không tự thở chống máy, đo bằng phím Insp/Exp Pause.
+      - generic [ref=e92]: VT thực tế (mL)
+      - spinbutton "VT thực tế (mL)" [ref=e93]
+      - generic [ref=e94]: PEEP đang cài (cmH₂O)
+      - spinbutton "PEEP đang cài (cmH₂O)" [ref=e95]
+      - generic [ref=e96]: SpO₂ (%)
+      - spinbutton "SpO₂ (%)" [ref=e97]
+      - generic [ref=e98]: Ppeak (cmH₂O)
+      - spinbutton "Ppeak (cmH₂O)" [ref=e99]
+      - generic [ref=e100]: Pplat (cmH₂O)
+      - spinbutton "Pplat (cmH₂O)" [ref=e101]
+      - generic [ref=e102]: Nhịp tim (lần/phút)
+      - spinbutton "Nhịp tim (lần/phút)" [ref=e103]
+      - generic [ref=e104]: Huyết áp tâm thu (mmHg)
+      - spinbutton "Huyết áp tâm thu (mmHg)" [ref=e105]
+      - generic [ref=e106]: Auto-PEEP (cmH₂O, nếu đo được)
+      - spinbutton "Auto-PEEP (cmH₂O, nếu đo được)" [ref=e107]
+    - region [ref=e108]:
+      - heading "Cấp cứu và tiên lượng" [level=2] [ref=e109]
+      - generic [ref=e110]:
+        - button "Checklist DOPE" [ref=e111] [cursor=pointer]
+        - button "LEMON (đặt NKQ khó)" [ref=e112] [cursor=pointer]
+        - button "MOANS (bóp bóng khó)" [ref=e113] [cursor=pointer]
+        - button "HOP (huyết động)" [ref=e114] [cursor=pointer]
+  - contentinfo [ref=e81]:
+    - paragraph [ref=e82]: Phiên bản 1.5.0 · Chỉ người lớn · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.
+    - button "Xóa dữ liệu phiên này" [ref=e83] [cursor=pointer]
+    - paragraph

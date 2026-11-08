@@ -1,0 +1,103 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - heading "Cài đặt ban đầu máy thở cấp cứu" [level=1] [ref=f1e4]
+    - paragraph [ref=f1e5]: Neumovent TS · VC-A/C (VCV trên máy) · Bác sĩ trực viện
+  - note [ref=f1e6]:
+    - strong [ref=f1e7]: Đề xuất của Khoa Cấp cứu Bệnh viện Quân y 13.
+    - text: Chỉ dành cho người lớn từ 18 tuổi. Chỉ cài đặt ban đầu và chuyển giao. Bác sĩ chuyên ngành hồi sức chỉnh chế độ thở. Ứng dụng không tự đặt thông số lên máy và không lưu dữ liệu bệnh nhân.
+  - region "Trạng thái hiện tại" [ref=f1e8]:
+    - generic [ref=f1e9]: Chưa ghi giờ nối máy
+    - generic [ref=f1e10]: 0 cảnh báo đỏ
+    - generic [ref=f1e11]: "Chuyên ngành: chưa đến"
+  - tablist "Các bước" [ref=f1e12]:
+    - tab "1. Thiết lập" [selected] [ref=f1e13] [cursor=pointer]
+    - tab "2. Sau nối" [ref=f1e14] [cursor=pointer]
+    - tab "3. Chuyển giao" [ref=f1e15] [cursor=pointer]
+  - tabpanel "1. Thiết lập" [ref=f1e16]:
+    - region [ref=f1e17]:
+      - heading "Giới tính và chiều cao" [level=2] [ref=f1e18]
+      - group "Giới tính" [ref=f1e19]:
+        - button "Nam" [pressed] [ref=f1e20] [cursor=pointer]
+        - button "Nữ" [ref=f1e21] [cursor=pointer]
+      - generic [ref=f1e22]:
+        - button "Giảm 1 cm" [ref=f1e23] [cursor=pointer]: −
+        - generic [ref=f1e24]: 165 cm
+        - button "Tăng 1 cm" [ref=f1e25] [cursor=pointer]: +
+      - slider "Chiều cao, centimét" [ref=f1e26]: "165"
+      - generic [ref=f1e27]: Nguồn chiều cao
+      - combobox "Nguồn chiều cao" [ref=f1e28]:
+        - option "Chọn nguồn"
+        - option "Đo khi nằm" [selected]
+        - option "Hồ sơ"
+        - option "Người nhà khai"
+        - option "Ước lượng (sai số lớn)"
+      - generic [ref=f1e29]:
+        - generic [ref=f1e30]: PBW (Devine)
+        - generic [ref=f1e31]: 61.5 kg
+      - paragraph [ref=f1e32]: PBW theo Devine. Không dùng cân nặng thực tế.
+    - region [ref=f1e33]:
+      - heading "Cài đặt khởi đầu (VC-A/C)" [level=2] [ref=f1e34]
+      - generic [ref=f1e36]:
+        - generic [ref=f1e37]:
+          - generic [ref=f1e38]: VT
+          - generic [ref=f1e39]: "369"
+          - generic [ref=f1e40]: mL (6 mL/kg PBW)
+          - generic [ref=f1e41]: "Trên TS cài bằng lít: 0.369 L"
+        - generic [ref=f1e42]:
+          - generic [ref=f1e43]: Tần số f
+          - generic [ref=f1e44]: "15"
+          - generic [ref=f1e45]: lần/phút
+        - generic [ref=f1e46]:
+          - generic [ref=f1e47]: PEEP
+          - generic [ref=f1e48]: "5"
+          - generic [ref=f1e49]: cmH₂O
+        - generic [ref=f1e50]:
+          - generic [ref=f1e51]: FiO₂
+          - generic [ref=f1e52]: 100%
+          - generic [ref=f1e53]: Giảm sớm khi SpO₂ đạt đích
+        - generic [ref=f1e54]:
+          - generic [ref=f1e55]: I:E · Ti
+          - generic [ref=f1e56]: 1:2
+          - generic [ref=f1e57]: Ti ≈ 1.33 s · Flow tối thiểu ≈ 17 L/phút
+        - generic [ref=f1e58]:
+          - generic [ref=f1e59]: Pmax báo động
+          - generic [ref=f1e60]: "40"
+          - generic [ref=f1e61]: Giữ mặc định. Không nâng để đạt VT.
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]:
+            - text: "Mode:"
+            - strong [ref=f1e64]: VC-A/C (trên TS hiển thị VCV)
+          - generic [ref=f1e65]:
+            - text: "SpO₂ mục tiêu:"
+            - strong [ref=f1e66]: 92–96%
+          - generic [ref=f1e67]:
+            - text: "Pplat mục tiêu:"
+            - strong [ref=f1e68]: ≤ 30 cmH₂O
+    - region [ref=f1e69]:
+      - heading "Kiểm tra trước khi nối bệnh nhân" [level=2] [ref=f1e70]
+      - generic [ref=f1e71] [cursor=pointer]:
+        - checkbox "Đã chọn nhóm bệnh nhân trên máy trong 30 giây sau khi bật (nếu không, máy vào chế độ khẩn cấp)" [ref=f1e72]
+        - generic [ref=f1e73]: Đã chọn nhóm bệnh nhân trên máy trong 30 giây sau khi bật (nếu không, máy vào chế độ khẩn cấp)
+      - generic [ref=f1e74] [cursor=pointer]:
+        - checkbox "Pin và nguồn điện ổn; máy không báo \"Defective Battery\"" [ref=f1e75]
+        - generic [ref=f1e76]: Pin và nguồn điện ổn; máy không báo "Defective Battery"
+      - generic [ref=f1e77] [cursor=pointer]:
+        - checkbox "Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy ở cạnh giường" [ref=f1e78]
+        - generic [ref=f1e79]: Nguồn O₂ và khí nén sẵn sàng; bóng Ambu có túi và oxy ở cạnh giường
+      - generic [ref=f1e80] [cursor=pointer]:
+        - checkbox "Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật" [ref=f1e81]
+        - generic [ref=f1e82]: Kiểm tra rò rỉ mạch thở; báo động ngắt mạch đang bật
+      - generic [ref=f1e83] [cursor=pointer]:
+        - checkbox "Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở" [ref=f1e84]
+        - generic [ref=f1e85]: Đã cài Pmax 40 cmH₂O, báo động thể tích phút thấp và ngưng thở
+      - generic [ref=f1e86] [cursor=pointer]:
+        - checkbox "Đã chọn nguồn chiều cao (tự động)" [checked] [disabled] [ref=f1e87]
+        - generic [ref=f1e88]: Đã chọn nguồn chiều cao (tự động)
+      - generic [ref=f1e89] [cursor=pointer]:
+        - checkbox "Đã đặt peak flow và trigger theo Operator's Manual của máy tại khoa" [ref=f1e90]
+        - generic [ref=f1e91]: Đã đặt peak flow và trigger theo Operator's Manual của máy tại khoa
+      - paragraph [ref=f1e92]: Còn 6 mục chưa xác nhận.
+  - contentinfo [ref=f1e93]:
+    - paragraph [ref=f1e94]: Phiên bản 1.5.0 · Chỉ người lớn · Không lưu dữ liệu bệnh nhân · Hoạt động ngoại tuyến sau lần tải đầu.
+    - button "Xóa dữ liệu phiên này" [ref=f1e95] [cursor=pointer]
+    - paragraph [ref=f1e96]: Đã khôi phục phiên gần nhất trong tab này.
