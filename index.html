@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.5.7. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.5.8. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
     --bg: #07131f; --panel: #102235; --panel-2: #091827; --panel-3: #163047;
     --line: #38566e; --line-strong: #66849a; --text: #f7fbff; --muted: #b9cad8;
@@ -262,7 +262,7 @@
         <p id="expert-validation" class="field-error" role="alert" aria-live="polite"></p>
         <p id="expert-summary" class="detail" aria-live="polite"></p>
         <label class="lbl" for="expert-reason">Lý do điều chỉnh / câu hỏi bàn giao</label>
-        <textarea id="expert-reason" rows="2" placeholder="Ví dụ: đánh giá lại PEEP sau khí máu"></textarea>
+        <textarea id="expert-reason" rows="2" placeholder="Ví dụ: điều chỉnh PEEP theo oxy hóa và cơ học phổi"></textarea>
         <div id="expert-compare" class="small" aria-live="polite"></div>
       </div>
     </section>
@@ -300,8 +300,8 @@
         <div class="field"><label class="lbl" for="in-peep-act">PEEP cài trên máy (cmH₂O)</label><input type="number" id="in-peep-act" min="0" max="30" step="1" inputmode="numeric"><p id="in-peep-act-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-autopeep">Auto-PEEP đo được (cmH₂O)</label><input type="number" id="in-autopeep" min="0" max="30" step="1" inputmode="numeric"><p id="in-autopeep-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-spo2">SpO₂ (%)</label><input type="number" id="in-spo2" min="50" max="100" step="1" inputmode="numeric"><p id="in-spo2-error" class="field-error" role="alert" hidden></p></div>
-        <div class="field"><label class="lbl" for="in-pao2">PaO₂ (mmHg)</label><input type="number" id="in-pao2" min="20" max="600" step="1" inputmode="numeric"><p id="in-pao2-error" class="field-error" role="alert" hidden></p></div>
-        <div class="field"><label class="lbl" for="in-fio2-actual">FiO₂ lúc lấy khí máu (%)</label><input type="number" id="in-fio2-actual" min="21" max="100" step="1" inputmode="numeric"><p id="in-fio2-actual-error" class="field-error" role="alert" hidden></p></div>
+        <div class="field" id="field-pao2" hidden><label class="lbl" for="in-pao2">PaO₂ (mmHg)</label><input type="number" id="in-pao2" min="20" max="600" step="1" inputmode="numeric"><p id="in-pao2-error" class="field-error" role="alert" hidden></p></div>
+        <div class="field"><label class="lbl" for="in-fio2-actual">FiO₂ cài trên máy (%)</label><input type="number" id="in-fio2-actual" min="21" max="100" step="1" inputmode="numeric"><p id="in-fio2-actual-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-ppeak">Ppeak (cmH₂O)</label><input type="number" id="in-ppeak" min="0" max="80" step="1" inputmode="numeric"><p id="in-ppeak-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-pplat">Pplat (cmH₂O)</label><input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric"><p id="in-pplat-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-hr">Nhịp tim (lần/phút)</label><input type="number" id="in-hr" min="20" max="250" step="1" inputmode="numeric"><p id="in-hr-error" class="field-error" role="alert" hidden></p></div>
@@ -318,9 +318,9 @@
       </div>
       <div id="derived-metrics" class="card-subsection" aria-live="polite">
         <h3>Chỉ số tính toán</h3>
-        <p id="pf-value" class="small">P/F: thiếu PaO₂ hoặc FiO₂.</p>
+        <p id="pf-value" class="small">S/F: cần SpO₂ và FiO₂ trên máy để tính.</p>
         <p id="driving-value" class="small">ΔP: thiếu Pplat hoặc PEEP.</p>
-        <p class="muted small">Đối chiếu thời điểm đo trước khi dùng P/F hoặc ΔP.</p>
+        <p class="muted small">Chưa có khí máu: dùng S/F (SpO₂/FiO₂) thay thế P/F để theo dõi oxy hóa máu.</p>
       </div>
     </section>
 
@@ -397,7 +397,7 @@
   </main>
 
   <footer>
-    <p>v1.5.7 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
+    <p>v1.5.8 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
     <button type="button" id="clear-session" class="btn-small">Xóa dữ liệu phiên này</button>
     <p id="session-msg" class="muted small" aria-live="polite"></p>
   </footer>
@@ -858,11 +858,12 @@
       '   Profile: ' + (profile ? profile.name : 'chưa chọn') + ' · ngưỡng SpO₂ đang áp dụng ' + oxygenTarget().min + '–' + oxygenTarget().max + '%.',
       '   Đề xuất của ứng dụng (chưa xác nhận trên máy): VT ' + vt + ' mL (' + cfg.vtMlKg + ' mL/kg PBW), f ' + cfg.rr +
         ', PEEP ' + cfg.peep + ', FiO₂ ' + cfg.fio2 + '%, I:E 1:' + cfg.ie + ', Pmax ' + cfg.pmax + '.',
-      '   Đã nhập từ máy: VT cài ' + val('in-vt-set', ' mL') + measuredAt('in-vt-set') + '; PEEP cài ' + val('in-peep-act', ' cmH₂O') + measuredAt('in-peep-act') + '; FiO₂ lúc khí máu ' + val('in-fio2-actual', '%') + measuredAt('in-fio2-actual') + '.',
+      '   Đã nhập từ máy: VT cài ' + val('in-vt-set', ' mL') + measuredAt('in-vt-set') + '; PEEP cài ' + val('in-peep-act', ' cmH₂O') + measuredAt('in-peep-act') + '; FiO₂ trên máy ' + val('in-fio2-actual', '%') + measuredAt('in-fio2-actual') + '.',
       '   Checklist trước nối: ' + done + '/7.',
       '',
       'A: SpO₂ ' + val('in-spo2', '%') + measuredAt('in-spo2') +
-        '; PaO₂ ' + val('in-pao2', ' mmHg') + measuredAt('in-pao2') +
+        (num('in-pao2') !== null ? '; PaO₂ ' + val('in-pao2', ' mmHg') + measuredAt('in-pao2') : '') +
+        (num('in-spo2') !== null && num('in-fio2-actual') !== null ? '; S/F ' + Math.round(num('in-spo2') / (num('in-fio2-actual') / 100)) : '') +
         '; Ppeak ' + val('in-ppeak', ' cmH₂O') + measuredAt('in-ppeak') +
         '; Pplat ' + val('in-pplat', ' cmH₂O') + measuredAt('in-pplat') +
         '; VT đo ' + val('in-vt-act', ' mL') + measuredAt('in-vt-act') +
@@ -898,9 +899,17 @@
     urgent.hidden = redMessages.length === 0;
     box.setAttribute('aria-live', lastRed > 0 ? 'assertive' : 'polite');
     $('sbar').value = w === null ? 'Chọn giới tính để tính PBW và tạo SBAR.' : buildSbar(w, list);
-    var pao2 = num('in-pao2'), fio2 = num('in-fio2-actual'), pplat = num('in-pplat'), peep = num('in-peep-act'), autoPeep = num('in-autopeep');
+    var spo2 = num('in-spo2'), pao2 = num('in-pao2'), fio2 = num('in-fio2-actual'), pplat = num('in-pplat'), peep = num('in-peep-act'), autoPeep = num('in-autopeep');
     var totalPeep = peep === null ? null : peep + (autoPeep === null ? 0 : autoPeep);
-    $('pf-value').textContent = pao2 !== null && fio2 !== null ? 'P/F ' + Math.round(pao2 / (fio2 / 100)) + ' mmHg (FiO₂ lúc khí máu).' : 'P/F: thiếu PaO₂ hoặc FiO₂ lúc khí máu.';
+    if (pao2 !== null && fio2 !== null) {
+      $('pf-value').textContent = 'P/F ' + Math.round(pao2 / (fio2 / 100)) + ' mmHg (từ PaO₂/FiO₂)' + (spo2 !== null ? ' · S/F ' + Math.round(spo2 / (fio2 / 100)) : '') + '.';
+    } else if (spo2 !== null && fio2 !== null) {
+      var sf = Math.round(spo2 / (fio2 / 100));
+      var sfNote = spo2 > 97 ? ' (SpO₂ >97%: S/F kém nhạy)' : (sf <= 150 ? ' (gợi ý ARDS nặng)' : (sf <= 235 ? ' (gợi ý ARDS vừa)' : (sf <= 315 ? ' (gợi ý ARDS nhẹ)' : ' (oxy hóa đạt)')));
+      $('pf-value').textContent = 'S/F ' + sf + sfNote + ' · Thay thế P/F khi chưa có khí máu.';
+    } else {
+      $('pf-value').textContent = 'S/F: cần SpO₂ và FiO₂ trên máy để tính.';
+    }
     $('driving-value').textContent = pplat !== null && totalPeep !== null && pplat >= totalPeep
       ? 'ΔP ' + (pplat - totalPeep) + ' cmH₂O (Pplat − total PEEP).'
       : 'ΔP: cần Pplat ≥ total PEEP.';

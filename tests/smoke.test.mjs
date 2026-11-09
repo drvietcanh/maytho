@@ -40,10 +40,12 @@ test('clinical alert rules retain approved COPD target and total PEEP logic', ()
   assert.match(html, /Ppeak ' \+ val\('in-ppeak', ' cmH₂O'\)/);
   assert.match(html, /function normalizeRestoredState\(\)/);
   assert.match(html, /normalizeRestoredState\(\);/);
+  assert.match(html, /id="field-pao2"[^>]*hidden/);
+  assert.match(html, /S\/F/);
 });
 
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.7'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.8'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);

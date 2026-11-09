@@ -213,3 +213,12 @@
 - Xóa phiên đồng thời xóa thông báo timer/copy còn sót; lời nhắc hiệu chỉnh mốc không nói khởi động lại đồng hồ khi Hồi sức đã đến.
 - Chuẩn hóa phiên khôi phục: giới tính, chiều cao, profile, vai trò, số mốc và toàn bộ thông số Hồi sức phải còn đúng min/max/step; giá trị cũ sai được trả về mặc định an toàn của ứng dụng.
 - `npm test`: 5/5 đạt; build và `git diff --check` đạt. Smoke test Chromium: giá trị expert rỗng bị chặn/phục hồi, COPD 91%/93%, ΔP theo total PEEP, đơn vị SBAR, P/F hợp lệ/sai, snapshot thiếu dữ liệu, timer qua reload; không lỗi console hoặc overflow tại 360/390/768/1024 px.
+
+## 09/11/2026 — Điều chỉnh thực tế tuyến cơ sở chưa có khí máu 1.5.8
+
+- Ẩn ô nhập PaO₂ khỏi giao diện sau nối theo chỉ đạo thực tế cơ sở chưa triển khai xét nghiệm khí máu động mạch; giữ nguyên cấu trúc DOM và schema để sẵn sàng kích hoạt lại khi có máy.
+- Đổi nhãn “FiO₂ lúc lấy khí máu” thành “FiO₂ cài trên máy (%)” sát với thực tế vận hành máy thở Neumovent TS.
+- Bổ sung tính toán tỷ lệ S/F (SpO₂ / FiO₂ dạng thập phân) thay thế cho P/F theo tiêu chuẩn quốc tế (Rice et al., Kigali modification) để tầm soát và phân tầng ARDS không xâm lấn.
+- Cập nhật mẫu báo cáo SBAR: không còn chèn PaO₂ chưa ghi, bổ sung chỉ số S/F và ghi nhận FiO₂ cài trên máy.
+- Tăng phiên bản PWA lên 1.5.8 (Service Worker, Web Manifest, footer, package.json).
+- `npm test`: 5/5 đạt; `npm run build`: đạt.

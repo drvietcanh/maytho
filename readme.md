@@ -1,4 +1,4 @@
-﻿# Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)
+# Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)
 
 Công cụ tham khảo thông số khởi đầu cho máy thở TECME Neumovent TS trong cấp cứu và hồi sức tích cực. Ứng dụng là Progressive Web App (PWA), chạy hoàn toàn trên trình duyệt, không có máy chủ. Dữ liệu phiên được giữ tạm trong `sessionStorage` của tab để khôi phục sau tải lại; bản lưu không được khôi phục nếu lần lưu cuối đã quá 2 giờ. Cần xóa phiên trên thiết bị dùng chung.
 
@@ -83,7 +83,7 @@ Sau khi tạo các tệp này, nhớ tăng `CACHE_VERSION` trong `sw.js` (xem m�
 
 1. Mở ứng dụng trên trình duyệt máy tính bằng HTTPS.
 2. Mở DevTools (F12) → tab **Application** → **Service Workers**. Xác nhận trạng thái là `activated and is running`.
-3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.7` chứa `index.html` và `manifest.json`.
+3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.8` chứa `index.html` và `manifest.json`.
 4. Bật chế độ **Offline** trong DevTools (tab Network), tải lại trang. Ứng dụng phải vẫn mở và tính toán được.
 5. Cài lên màn hình chính trên iOS và Android, rồi làm lại bước 4 trên thiết bị thật.
 
