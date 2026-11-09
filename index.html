@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.5.4. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.5.7. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
     --bg: #07131f; --panel: #102235; --panel-2: #091827; --panel-3: #163047;
     --line: #38566e; --line-strong: #66849a; --text: #f7fbff; --muted: #b9cad8;
@@ -252,13 +252,14 @@
       <div id="expert-panel" hidden>
         <p class="muted small">Bảng tính để bàn giao; không kết nối máy.</p>
         <div class="result-grid">
-          <div><label class="lbl" for="expert-vt">VT (mL/kg PBW)</label><input id="expert-vt" type="number" min="4" max="12" step="0.5"></div>
-          <div><label class="lbl" for="expert-rr">Tần số (lần/phút)</label><input id="expert-rr" type="number" min="1" max="60" step="1"></div>
-          <div><label class="lbl" for="expert-peep">PEEP (cmH₂O)</label><input id="expert-peep" type="number" min="0" max="30" step="1"></div>
-          <div><label class="lbl" for="expert-fio2">FiO₂ (%)</label><input id="expert-fio2" type="number" min="21" max="100" step="1"></div>
-          <div><label class="lbl" for="expert-ie">I:E (mẫu số)</label><input id="expert-ie" type="number" min="0.25" max="5" step="0.25"></div>
-          <div><label class="lbl" for="expert-pmax">Pmax (cmH₂O)</label><input id="expert-pmax" type="number" min="10" max="80" step="1"></div>
+          <div><label class="lbl" for="expert-vt">VT (mL/kg PBW)</label><input id="expert-vt" type="number" min="4" max="12" step="0.5" required></div>
+          <div><label class="lbl" for="expert-rr">Tần số (lần/phút)</label><input id="expert-rr" type="number" min="1" max="60" step="1" required></div>
+          <div><label class="lbl" for="expert-peep">PEEP (cmH₂O)</label><input id="expert-peep" type="number" min="0" max="30" step="1" required></div>
+          <div><label class="lbl" for="expert-fio2">FiO₂ (%)</label><input id="expert-fio2" type="number" min="21" max="100" step="1" required></div>
+          <div><label class="lbl" for="expert-ie">I:E (mẫu số)</label><input id="expert-ie" type="number" min="0.25" max="5" step="0.25" required></div>
+          <div><label class="lbl" for="expert-pmax">Pmax (cmH₂O)</label><input id="expert-pmax" type="number" min="10" max="80" step="1" required></div>
         </div>
+        <p id="expert-validation" class="field-error" role="alert" aria-live="polite"></p>
         <p id="expert-summary" class="detail" aria-live="polite"></p>
         <label class="lbl" for="expert-reason">Lý do điều chỉnh / câu hỏi bàn giao</label>
         <textarea id="expert-reason" rows="2" placeholder="Ví dụ: đánh giá lại PEEP sau khí máu"></textarea>
@@ -371,7 +372,8 @@
         <li id="call-spo2-rule">SpO₂ dưới mục tiêu profile và chưa cải thiện sau xử trí ban đầu.</li>
         <li>Pplat trên 30 cmH₂O.</li>
         <li>Ppeak ≥ 40 cmH₂O, chưa rõ nguyên nhân.</li>
-        <li>Auto-PEEP &gt; 0 hoặc VT đo &lt; 90% VT cài.</li>
+        <li>Auto-PEEP &gt; 0.</li>
+        <li>VT đo &lt; 90% VT cài: kiểm tra rò, tắc và cuff.</li>
         <li>Tụt HA, nghi tràn khí màng phổi áp lực hoặc không đồng bộ máy.</li>
       </ul>
     </section>
@@ -395,7 +397,7 @@
   </main>
 
   <footer>
-    <p>v1.5.4 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
+    <p>v1.5.7 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
     <button type="button" id="clear-session" class="btn-small">Xóa dữ liệu phiên này</button>
     <p id="session-msg" class="muted small" aria-live="polite"></p>
   </footer>
@@ -495,9 +497,11 @@
       var input = $('expert-' + key);
       var value = key === 'vt' ? state.expertSettings.vtMlKg : key === 'fio2' ? state.expertSettings.fio2 : state.expertSettings[key];
       input.value = value;
+      input.setAttribute('aria-invalid', 'false');
       input.disabled = !(expert && state.expertAck);
     });
     var cfg = currentSettings();
+    $('expert-validation').textContent = '';
     $('expert-summary').textContent = expert && state.expertAck
       ? 'Đề xuất: VT ' + cfg.vtMlKg + ' mL/kg PBW · f ' + cfg.rr + ' · PEEP ' + cfg.peep + ' · FiO₂ ' + cfg.fio2 + '% · I:E 1:' + cfg.ie + ' · Pmax ' + cfg.pmax + '.'
       : '';
@@ -557,20 +561,47 @@
       }));
     } catch (err) { /* private browsing or storage disabled: continue in memory */ }
   }
+  function normalizeRestoredState() {
+    state.sex = state.sex === 'M' || state.sex === 'F' ? state.sex : null;
+    var restoredHeight = Number(state.height);
+    state.height = isFinite(restoredHeight) ? Math.min(210, Math.max(130, Math.round(restoredHeight))) : 165;
+    state.mode = ['general', 'coordinator', 'expert'].indexOf(state.mode) >= 0 ? state.mode : 'general';
+    state.profile = (window.VENT_PROFILES || []).some(function (profile) { return profile.id === state.profile; }) ? state.profile : 'baseline';
+    state.expertAck = state.mode === 'expert' && state.expertAck === true;
+    state.events = Array.isArray(state.events) ? state.events.slice(-30) : [];
+    state.snapshots = Array.isArray(state.snapshots) ? state.snapshots.slice(-5) : [];
+    state.measurementAt = state.measurementAt && typeof state.measurementAt === 'object' ? state.measurementAt : {};
+
+    var defaults = { vtMlKg: 6, rr: 15, peep: 5, fio2: 100, ie: 2, pmax: 40 };
+    var rules = {
+      vtMlKg: [4, 12, 0.5], rr: [1, 60, 1], peep: [0, 30, 1],
+      fio2: [21, 100, 1], ie: [0.25, 5, 0.25], pmax: [10, 80, 1]
+    };
+    var restored = state.expertSettings && typeof state.expertSettings === 'object' ? state.expertSettings : {};
+    state.expertSettings = {};
+    Object.keys(rules).forEach(function (key) {
+      var raw = restored[key], value = Number(raw), rule = rules[key];
+      var aligned = raw !== undefined && raw !== null && raw !== '' && isFinite(value) && Math.abs((value - rule[0]) / rule[2] - Math.round((value - rule[0]) / rule[2])) < 1e-8;
+      state.expertSettings[key] = aligned && value >= rule[0] && value <= rule[1] ? value : defaults[key];
+    });
+  }
   function restoreSession() {
     try {
       var raw = sessionStorage.getItem(SESSION_KEY);
       if (!raw) return false;
       var saved = JSON.parse(raw);
-      if (!saved || !saved.state || Date.now() - saved.savedAt > 2 * 60 * 60 * 1000) {
+      if (!saved || !saved.state || !isFinite(Number(saved.savedAt)) || Date.now() - Number(saved.savedAt) > 2 * 60 * 60 * 1000) {
         sessionStorage.removeItem(SESSION_KEY);
         return false;
       }
       state = Object.assign(state, saved.state);
+      normalizeRestoredState();
       deadline = state.intubatedAt !== null && state.specAt === null ? state.intubatedAt + LIMIT_MS : null;
       Object.keys(saved.inputs || {}).forEach(function (id) {
-        if ($(id).type === 'checkbox') $(id).checked = !!saved.inputs[id];
-        else $(id).value = saved.inputs[id];
+        var input = $(id);
+        if (!input) return;
+        if (input.type === 'checkbox') input.checked = !!saved.inputs[id];
+        else input.value = saved.inputs[id];
       });
       $('session-msg').textContent = 'Đã khôi phục phiên trong tab.';
       if (deadline && state.specAt === null) {
@@ -590,8 +621,11 @@
     ['h-src', 'in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) { $(id).value = ''; });
     ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) { $(id).checked = false; });
     $('session-msg').textContent = 'Đã xóa phiên trong tab.';
+    $('timer-msg').textContent = '';
+    $('copy-msg').textContent = '';
     setTab(0);
     render();
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (err) {}
   }
   function num(id) {
     var input = $(id);
@@ -631,7 +665,13 @@
     return v === null ? 'chưa ghi' : v + (unit || '');
   }
   function measuredAt(id) {
-    return state.measurementAt && state.measurementAt[id] ? ' lúc ' + clock(state.measurementAt[id]) : '';
+    return num(id) !== null && state.measurementAt && state.measurementAt[id] ? ' lúc ' + clock(state.measurementAt[id]) : '';
+  }
+
+  function modeTxt() {
+    return state.mode === 'expert' ? 'Hồi sức · tùy chỉnh'
+      : state.mode === 'coordinator' ? 'Theo dõi / điều phối'
+      : 'Trực cấp cứu';
   }
   function currentMeasurements() {
     var ids = ['in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-peep-act', 'in-vt-act', 'in-vt-set', 'in-autopeep', 'in-hr', 'in-sbp'];
@@ -661,7 +701,9 @@
     }
     snapshots.slice().reverse().forEach(function (item) {
       var li = document.createElement('li');
-      li.textContent = clock(item.at) + ' · SpO₂ ' + (item.values['in-spo2'] || '—') + '% · Pplat ' + (item.values['in-pplat'] || '—') + ' · HR ' + (item.values['in-hr'] || '—');
+      li.textContent = clock(item.at) + ' · SpO₂ ' + (item.values['in-spo2'] ? item.values['in-spo2'] + '%' : '—') +
+        ' · Pplat ' + (item.values['in-pplat'] ? item.values['in-pplat'] + ' cmH₂O' : '—') +
+        ' · HR ' + (item.values['in-hr'] ? item.values['in-hr'] + '/phút' : '—');
       list.appendChild(li);
     });
   }
@@ -748,13 +790,14 @@
     var oxygen = oxygenTarget();
     var spo2 = num('in-spo2'), ppeak = num('in-ppeak'), pplat = num('in-pplat');
     var ap = num('in-autopeep'), vtAct = num('in-vt-act'), peepAct = num('in-peep-act');
+    var totalPeep = peepAct === null ? null : peepAct + (ap === null ? 0 : ap);
     var vtSet = num('in-vt-set');
 
     if (ppeak !== null && pplat !== null && pplat > ppeak) {
       out.push(['alert-amber', 'Pplat > Ppeak: kiểm tra phép đo và đơn vị.']);
     }
-    if (pplat !== null && peepAct !== null && pplat < peepAct) {
-      out.push(['alert-amber', 'Pplat < PEEP: kiểm tra số đo.']);
+    if (pplat !== null && totalPeep !== null && pplat < totalPeep) {
+      out.push(['alert-amber', 'Pplat < total PEEP: kiểm tra số đo.']);
     }
     if (vtAct !== null && vtSet !== null && vtAct > vtSet * 1.25) {
       out.push(['alert-amber', 'VT đo >125% VT cài: kiểm tra đơn vị, cài đặt, phép đo.']);
@@ -762,6 +805,9 @@
 
     if (spo2 !== null && spo2 < oxygen.min) {
       out.push(['alert-red', 'SpO₂ < ' + oxygen.min + '%: kiểm tra DOPE, gọi Hồi sức ngay.']);
+    }
+    if (spo2 !== null && spo2 > oxygen.max) {
+      out.push(['alert-amber', 'SpO₂ > ' + oxygen.max + '%: vượt mục tiêu; đánh giá lại oxy.']);
     }
     if (ppeak !== null && ppeak >= 40 && pplat === null) {
       out.push(['alert-amber', 'Ppeak ≥ 40 cmH₂O: kiểm tra DOPE; không nâng Pmax.']);
@@ -773,7 +819,7 @@
       if (pplat > 30) {
         out.push(['alert-red', 'Pplat > 30 cmH₂O: gọi Hồi sức ngay; không tự chỉnh VT/Pmax.']);
       }
-      if (peepAct !== null && pplat - peepAct > 15) {
+      if (totalPeep !== null && pplat - totalPeep > 15) {
         out.push(['alert-amber', 'ΔP > 15 cmH₂O: ghi vào bàn giao.']);
       }
     }
@@ -805,7 +851,7 @@
     return [
       'SBAR THỞ MÁY',
       '',
-      'S: Người lớn · Neumovent TS · VC-A/C. Nối máy ' +
+      'S: Người lớn · Neumovent TS · VC-A/C · ' + modeTxt() + '. Nối máy ' +
         (state.intubatedAt !== null ? clock(state.intubatedAt) : '(chưa ghi giờ)') + '.',
       '',
       'B: ' + sexTxt() + ' · ' + state.height + ' cm (' + srcTxt() + ') · PBW ' + w.toFixed(1) + ' kg.',
@@ -817,10 +863,10 @@
       '',
       'A: SpO₂ ' + val('in-spo2', '%') + measuredAt('in-spo2') +
         '; PaO₂ ' + val('in-pao2', ' mmHg') + measuredAt('in-pao2') +
-        '; Ppeak ' + val('in-ppeak') + measuredAt('in-ppeak') +
-        '; Pplat ' + val('in-pplat') + measuredAt('in-pplat') +
+        '; Ppeak ' + val('in-ppeak', ' cmH₂O') + measuredAt('in-ppeak') +
+        '; Pplat ' + val('in-pplat', ' cmH₂O') + measuredAt('in-pplat') +
         '; VT đo ' + val('in-vt-act', ' mL') + measuredAt('in-vt-act') +
-        '; auto-PEEP ' + val('in-autopeep') + measuredAt('in-autopeep') +
+        '; auto-PEEP ' + val('in-autopeep', ' cmH₂O') + measuredAt('in-autopeep') +
         '; nhịp tim ' + val('in-hr', '/phút') + measuredAt('in-hr') +
         '; HA tâm thu ' + val('in-sbp', ' mmHg') + measuredAt('in-sbp') + '.',
       alertsTxt,
@@ -852,9 +898,12 @@
     urgent.hidden = redMessages.length === 0;
     box.setAttribute('aria-live', lastRed > 0 ? 'assertive' : 'polite');
     $('sbar').value = w === null ? 'Chọn giới tính để tính PBW và tạo SBAR.' : buildSbar(w, list);
-    var pao2 = num('in-pao2'), fio2 = num('in-fio2-actual'), pplat = num('in-pplat'), peep = num('in-peep-act');
+    var pao2 = num('in-pao2'), fio2 = num('in-fio2-actual'), pplat = num('in-pplat'), peep = num('in-peep-act'), autoPeep = num('in-autopeep');
+    var totalPeep = peep === null ? null : peep + (autoPeep === null ? 0 : autoPeep);
     $('pf-value').textContent = pao2 !== null && fio2 !== null ? 'P/F ' + Math.round(pao2 / (fio2 / 100)) + ' mmHg (FiO₂ lúc khí máu).' : 'P/F: thiếu PaO₂ hoặc FiO₂ lúc khí máu.';
-    $('driving-value').textContent = pplat !== null && peep !== null && pplat >= peep ? 'ΔP ' + (pplat - peep) + ' cmH₂O (Pplat − PEEP).' : 'ΔP: cần Pplat ≥ PEEP.';
+    $('driving-value').textContent = pplat !== null && totalPeep !== null && pplat >= totalPeep
+      ? 'ΔP ' + (pplat - totalPeep) + ' cmH₂O (Pplat − total PEEP).'
+      : 'ΔP: cần Pplat ≥ total PEEP.';
     updateStatus();
   }
 
@@ -1007,18 +1056,32 @@
     render();
   });
   [['vt', 'vtMlKg'], ['rr', 'rr'], ['peep', 'peep'], ['fio2', 'fio2'], ['ie', 'ie'], ['pmax', 'pmax']].forEach(function (pair) {
-    $('expert-' + pair[0]).addEventListener('input', function (e) {
+    var expertInput = $('expert-' + pair[0]);
+    expertInput.addEventListener('input', function (e) {
       var value = Number(e.target.value);
-      if (!isFinite(value) || !e.target.checkValidity()) return;
+      if (e.target.value === '' || !isFinite(value) || !e.target.checkValidity()) {
+        e.target.setAttribute('aria-invalid', 'true');
+        $('expert-validation').textContent = 'Thông số tùy chỉnh không hợp lệ; đề xuất chưa thay đổi.';
+        return;
+      }
+      e.target.setAttribute('aria-invalid', 'false');
       state.expertSettings[pair[1]] = value;
       render();
+    });
+    expertInput.addEventListener('blur', function (e) {
+      if (e.target.value !== '' && e.target.checkValidity()) return;
+      var stored = state.expertSettings[pair[1]];
+      e.target.value = stored;
+      e.target.setAttribute('aria-invalid', 'false');
+      $('expert-validation').textContent = '';
     });
   });
 
   ['in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) {
     $(id).addEventListener('input', function () {
       if (!state.measurementAt) state.measurementAt = {};
-      state.measurementAt[id] = Date.now();
+      if (num(id) === null) delete state.measurementAt[id];
+      else state.measurementAt[id] = Date.now();
       render();
     });
   });
@@ -1054,7 +1117,7 @@
   $('btn-intubate').addEventListener('click', function () {
     var correcting = state.intubatedAt !== null;
     if (correcting) {
-      var reason = window.prompt('Lý do hiệu chỉnh mốc nối máy? Đồng hồ tính lại 30 phút. Không nhập định danh bệnh nhân.');
+      var reason = window.prompt('Lý do hiệu chỉnh mốc nối máy?' + (state.specAt === null ? ' Đồng hồ tính lại từ mốc mới.' : '') + ' Không nhập định danh bệnh nhân.');
       if (!reason || !reason.trim()) return;
       recordEvent('Hiệu chỉnh giờ nối máy: ' + reason.trim().slice(0, 160));
     }

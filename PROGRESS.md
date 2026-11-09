@@ -195,3 +195,21 @@
 - Tăng phiên bản cache để PWA đã cài nhận giao diện mới.
 - Rà soát phát hành: không có lỗi console, ID trùng hoặc overflow tại 320/360/390/768/1024/1440 px; PBW, P/F, cảnh báo, bàn phím, modal và offline đạt.
 - Thêm smoke test ngăn banner và tên đơn vị xuất hiện lại. `21st review` không khả dụng trong môi trường; chưa kiểm thử screen reader/AT thực tế.
+
+## 09/11/2026 — Sửa logic lâm sàng 1.5.5
+
+- Kích hoạt mục tiêu SpO₂ 88–92% của profile COPD theo xác nhận đã được bác sĩ Hồi sức phê duyệt; thêm cảnh báo khi SpO₂ vượt giới hạn trên của profile.
+- Tính driving pressure và cảnh báo ΔP từ total PEEP (PEEP cài + auto-PEEP đo được khi có), đồng thời kiểm tra Pplat với total PEEP.
+- Chỉ giữ timestamp cho số đo hợp lệ; SBAR ghi vai trò thao tác và không còn ghép giờ với giá trị rỗng/sai.
+- Xóa phiên không tạo lại khóa lưu trữ rỗng; thống nhất nhãn mục tiêu Pplat ≤30 cmH₂O.
+- Profile COPD được xác nhận đã phê duyệt và hoàn thành phạm vi phát hành ngày 09/11/2026.
+- `npm test`: 5/5 đạt; build và `git diff --check` đạt. Smoke test trình duyệt tại 390 px: COPD 91% không cảnh báo thấp, 93% cảnh báo vượt 92%; Pplat 30/PEEP 5/auto-PEEP 10 cho ΔP 15; SBAR ghi vai trò, không gắn giờ cho giá trị rỗng; không overflow và không có lỗi console.
+
+## 09/11/2026 — Hoàn thiện tính nhất quán dữ liệu 1.5.7
+
+- Chặn ô tùy chỉnh Hồi sức rỗng/ngoài giới hạn làm lệch giá trị hiển thị với giá trị đang tính; báo lỗi và phục hồi giá trị hợp lệ gần nhất khi rời ô.
+- Bổ sung đơn vị cmH₂O cho Ppeak, Pplat và auto-PEEP trong SBAR; snapshot không còn hiển thị đơn vị sau dấu gạch dữ liệu trống.
+- Tách VT đo thấp khỏi điều kiện “gọi Hồi sức ngay”; giữ hướng dẫn kiểm tra rò, tắc và cuff phù hợp mức cảnh báo hổ phách.
+- Xóa phiên đồng thời xóa thông báo timer/copy còn sót; lời nhắc hiệu chỉnh mốc không nói khởi động lại đồng hồ khi Hồi sức đã đến.
+- Chuẩn hóa phiên khôi phục: giới tính, chiều cao, profile, vai trò, số mốc và toàn bộ thông số Hồi sức phải còn đúng min/max/step; giá trị cũ sai được trả về mặc định an toàn của ứng dụng.
+- `npm test`: 5/5 đạt; build và `git diff --check` đạt. Smoke test Chromium: giá trị expert rỗng bị chặn/phục hồi, COPD 91%/93%, ΔP theo total PEEP, đơn vị SBAR, P/F hợp lệ/sai, snapshot thiếu dữ liệu, timer qua reload; không lỗi console hoặc overflow tại 360/390/768/1024 px.

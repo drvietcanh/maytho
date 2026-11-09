@@ -6,7 +6,7 @@ Tài liệu này là cổng kiểm duyệt trước pilot/production. `DRAFT` v�
 |---|---|---|---|---|---|---|
 | baseline | Người lớn, cài đặt ban đầu | PBW, thông số khởi đầu nội bộ, cảnh báo chung | SOP bệnh viện + manual Neumovent TS | Trưởng khoa Hồi sức + phụ trách thiết bị | TECHNICALLY_VERIFIED | Ký duyệt SOP và pilot mô phỏng |
 | ards | Người lớn nghi/đã xác định ARDS | VT theo PBW, Pplat và nhắc đánh giá chuyên sâu | ATS/ESICM/SCCM guideline 2017 + SOP đơn vị | Bác sĩ Hồi sức được phân công | DRAFT | Chốt quần thể, hành động, nguồn và test ca mô phỏng |
-| copd | Đợt cấp COPD/nguy cơ giữ CO₂ | Nhắc mục tiêu oxy và khí máu | GOLD phiên bản bệnh viện áp dụng | Bác sĩ Hô hấp/Hồi sức | DRAFT | Chốt mục tiêu theo SOP và kiểm tra khí máu |
+| copd | Đợt cấp COPD/nguy cơ giữ CO₂ | Nhắc mục tiêu SpO₂ 88–92% và khí máu | GOLD phiên bản bệnh viện áp dụng + SOP đơn vị | Bác sĩ Hồi sức | APPROVED | Hoàn thành theo xác nhận phê duyệt của đơn vị ngày 09/11/2026 |
 | asthma | Hen nặng | Nhắc auto-PEEP, bẫy khí, đồng bộ | GINA phiên bản bệnh viện áp dụng | Bác sĩ Hô hấp/Hồi sức | DRAFT | Chốt tiêu chí escalation và manual máy |
 
 ## Quy tắc không được tự suy diễn

@@ -28,8 +28,22 @@ test('invalid numeric input is excluded by browser validity gate', () => {
   assert.match(html, /aria-invalid/);
 });
 
+test('clinical alert rules retain approved COPD target and total PEEP logic', () => {
+  assert.match(profiles, /id: 'copd', name: '[^']+', status: 'approved'/);
+  assert.match(html, /spo2 > oxygen\.max/);
+  assert.match(html, /peepAct \+ \(ap === null \? 0 : ap\)/);
+  assert.match(html, /Pplat − total PEEP/);
+  assert.match(html, /if \(num\(id\) === null\) delete state\.measurementAt\[id\]/);
+  assert.match(html, /modeTxt\(\)/);
+  assert.match(html, /expert-vt[^>]+required/);
+  assert.match(html, /e\.target\.value === ''/);
+  assert.match(html, /Ppeak ' \+ val\('in-ppeak', ' cmH₂O'\)/);
+  assert.match(html, /function normalizeRestoredState\(\)/);
+  assert.match(html, /normalizeRestoredState\(\);/);
+});
+
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.4'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.7'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);
