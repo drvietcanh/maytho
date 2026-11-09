@@ -1,7 +1,7 @@
 {
   "name": "emergency-vent-assist",
   "private": true,
-  "version": "1.5.8",
+  "version": "1.5.9",
   "type": "module",
   "scripts": {
     "test": "node --test",

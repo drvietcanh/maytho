@@ -222,3 +222,14 @@
 - Cập nhật mẫu báo cáo SBAR: không còn chèn PaO₂ chưa ghi, bổ sung chỉ số S/F và ghi nhận FiO₂ cài trên máy.
 - Tăng phiên bản PWA lên 1.5.8 (Service Worker, Web Manifest, footer, package.json).
 - `npm test`: 5/5 đạt; `npm run build`: đạt.
+
+## 09/11/2026 — Nâng cấp cơ học phổi và an toàn đường thở 1.5.9
+
+- Bổ sung tính toán Độ giãn nở tĩnh Cstat = VT / (Pplat − Total PEEP) tự động với nhận định lâm sàng (phổi cứng/ARDS < 30 mL/cmH₂O).
+- Bổ sung tính toán Thể tích phút VE = (VT × f) / 1000 L/phút để kiểm soát thông khí phế nang trong điều kiện không có PaCO₂.
+- Thêm trường đo Áp lực bóng chèn Cuff (cmH₂O) với dải an toàn 20–30 cmH₂O; cảnh báo rò khí/hít sặc (<20) và thiếu máu niêm mạc (>30).
+- Thêm cảnh báo hạ dần FiO₂ (Weaning FiO₂) khi SpO₂ đạt đích mà FiO₂ vẫn duy trì >60% để chống ngộ độc oxy kéo dài.
+- Thêm Modal kiểm tra “Chăm sóc đường thở & phòng ngừa VAP” (áp lực cuff, độ sâu vạch răng ống NKQ, góc đầu giường 30°–45°, bẫy nước và hút đờm vô khuẩn).
+- Đưa Cuff vào mẫu báo cáo SBAR và lưu phiên.
+- Cập nhật phiên bản lên 1.5.9 cho app shell, Service Worker, Manifest, package.json.
+- `npm test`: 5/5 đạt; `npm run build`: đạt.

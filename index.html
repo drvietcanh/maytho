@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.5.8. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.5.9. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
     --bg: #07131f; --panel: #102235; --panel-2: #091827; --panel-3: #163047;
     --line: #38566e; --line-strong: #66849a; --text: #f7fbff; --muted: #b9cad8;
@@ -128,6 +128,7 @@
   .tag { display: inline-block; font-size: .8rem; font-weight: 700; background: #334155; color: #fde68a; padding: 2px 8px; border-radius: 999px; margin-left: 4px; vertical-align: middle; }
   .emergency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .emergency-grid button { min-height: 66px; }
+  .emergency-grid button:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
   .modal { position: fixed; inset: 0; background: rgba(2, 6, 23, .94); overflow-y: auto; z-index: 10; padding: env(safe-area-inset-top, 0px) 10px env(safe-area-inset-bottom, 0px); }
   .modal-body { background: var(--panel); max-width: 680px; margin: 16px auto; padding: 20px; border-radius: var(--radius); border: 1px solid var(--line-strong); box-shadow: var(--shadow); }
@@ -306,6 +307,7 @@
         <div class="field"><label class="lbl" for="in-pplat">Pplat (cmH₂O)</label><input type="number" id="in-pplat" min="0" max="80" step="1" inputmode="numeric"><p id="in-pplat-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-hr">Nhịp tim (lần/phút)</label><input type="number" id="in-hr" min="20" max="250" step="1" inputmode="numeric"><p id="in-hr-error" class="field-error" role="alert" hidden></p></div>
         <div class="field"><label class="lbl" for="in-sbp">Huyết áp tâm thu (mmHg)</label><input type="number" id="in-sbp" min="40" max="300" step="1" inputmode="numeric"><p id="in-sbp-error" class="field-error" role="alert" hidden></p></div>
+        <div class="field"><label class="lbl" for="in-cuff">Áp lực bóng chèn Cuff (cmH₂O)</label><input type="number" id="in-cuff" min="0" max="60" step="1" inputmode="numeric"><p id="in-cuff-error" class="field-error" role="alert" hidden></p></div>
       </div>
 
       <div class="card-subsection" aria-labelledby="h-snapshot">
@@ -320,7 +322,9 @@
         <h3>Chỉ số tính toán</h3>
         <p id="pf-value" class="small">S/F: cần SpO₂ và FiO₂ trên máy để tính.</p>
         <p id="driving-value" class="small">ΔP: thiếu Pplat hoặc PEEP.</p>
-        <p class="muted small">Chưa có khí máu: dùng S/F (SpO₂/FiO₂) thay thế P/F để theo dõi oxy hóa máu.</p>
+        <p id="cstat-value" class="small">Cstat: thiếu Pplat, PEEP hoặc VT.</p>
+        <p id="ve-value" class="small">VE: thiếu VT hoặc tần số thở.</p>
+        <p class="muted small">Chưa có khí máu: dùng S/F (SpO₂/FiO₂), Cstat và VE để theo dõi oxy hóa và thông khí.</p>
       </div>
     </section>
 
@@ -333,6 +337,7 @@
         <button type="button" data-open="m-lemon" aria-haspopup="dialog">LEMON (đặt NKQ khó)</button>
         <button type="button" data-open="m-moans" aria-haspopup="dialog">MOANS (bóp bóng khó)</button>
         <button type="button" data-open="m-hop" aria-haspopup="dialog">HOP (huyết động)</button>
+        <button type="button" data-open="m-airway" aria-haspopup="dialog">Chăm sóc đường thở</button>
       </div>
     </section>
   </div>
@@ -397,7 +402,7 @@
   </main>
 
   <footer>
-    <p>v1.5.8 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
+    <p>v1.5.9 · Lưu tạm trong tab · Offline sau lần tải đầu</p>
     <button type="button" id="clear-session" class="btn-small">Xóa dữ liệu phiên này</button>
     <p id="session-msg" class="muted small" aria-live="polite"></p>
   </footer>
@@ -457,6 +462,22 @@
     <ul>
       <li>Đo HA, nhịp tim ngay sau đặt ống và nối máy.</li>
       <li>Chuẩn bị dịch, vận mạch theo phác đồ khoa trước an thần.</li>
+    </ul>
+    <button type="button" class="close-btn btn-full" data-close>Đóng</button>
+  </div>
+</div>
+
+<!-- MODAL AIRWAY -->
+<div id="m-airway" class="modal" role="dialog" aria-modal="true" aria-labelledby="t-airway" hidden>
+  <div class="modal-body">
+    <div class="modal-head"><h2 id="t-airway">Chăm sóc đường thở & phòng ngừa VAP</h2><button type="button" class="close-btn" data-close>Đóng</button></div>
+    <p class="muted">Checklist an toàn đường thở & điều dưỡng hồi sức.</p>
+    <ul>
+      <li><strong>Áp lực bóng chèn (Cuff):</strong> duy trì 20–30 cmH₂O (đo bằng đồng hồ chuyên dụng mỗi ca trực). &lt;20: nguy cơ rò khí, hít sặc; &gt;30: nguy cơ hoại tử niêm mạc.</li>
+      <li><strong>Vị trí cố định ống NKQ:</strong> kiểm tra vạch sâu ngang răng/khóe môi (nam: 21–23 cm, nữ: 19–21 cm); cố định chắc chắn.</li>
+      <li><strong>Tư thế giường:</strong> nâng cao đầu giường 30°–45° chống trào ngược, giảm nguy cơ VAP.</li>
+      <li><strong>Hút đờm:</strong> quy trình vô khuẩn, hút khi có ứ đọng; không bơm rửa nước muối thường quy.</li>
+      <li><strong>Bẫy nước trên dây thở:</strong> xả nước ngưng tụ định kỳ khi đầy 1/2; tránh để nước đọng làm sai cảm biến dòng hoặc chảy ngược vào phổi.</li>
     </ul>
     <button type="button" class="close-btn btn-full" data-close>Đóng</button>
   </div>
@@ -550,7 +571,7 @@
   function saveSession() {
     try {
       var inputs = {};
-      ['h-src', 'in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) {
+      ['h-src', 'in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep', 'in-cuff'].forEach(function (id) {
         inputs[id] = $(id).value;
       });
       ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) {
@@ -618,7 +639,7 @@
     state = { sex: null, height: 165, tab: 0, intubatedAt: null, specAt: null, calledAt: null, events: [], measurementAt: {}, snapshots: [], profile: 'baseline', mode: 'general', expertAck: false, expertReason: '', expertSettings: { vtMlKg: 6, rr: 15, peep: 5, fio2: 100, ie: 2, pmax: 40 } };
     deadline = null;
     stopTicking();
-    ['h-src', 'in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) { $(id).value = ''; });
+    ['h-src', 'in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep', 'in-cuff'].forEach(function (id) { $(id).value = ''; });
     ['pre1', 'pre2', 'pre3', 'pre4', 'pre5', 'pre7'].forEach(function (id) { $(id).checked = false; });
     $('session-msg').textContent = 'Đã xóa phiên trong tab.';
     $('timer-msg').textContent = '';
@@ -639,7 +660,7 @@
     var fields = {
       'in-vt-act': 'mL', 'in-vt-set': 'mL', 'in-peep-act': 'cmH₂O', 'in-spo2': '%', 'in-pao2': 'mmHg', 'in-fio2-actual': '%',
       'in-ppeak': 'cmH₂O', 'in-pplat': 'cmH₂O', 'in-hr': 'lần/phút',
-      'in-sbp': 'mmHg', 'in-autopeep': 'cmH₂O'
+      'in-sbp': 'mmHg', 'in-autopeep': 'cmH₂O', 'in-cuff': 'cmH₂O'
     };
     Object.keys(fields).forEach(function (id) {
       var input = $(id), error = $(id + '-error');
@@ -674,7 +695,7 @@
       : 'Trực cấp cứu';
   }
   function currentMeasurements() {
-    var ids = ['in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-peep-act', 'in-vt-act', 'in-vt-set', 'in-autopeep', 'in-hr', 'in-sbp'];
+    var ids = ['in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-peep-act', 'in-vt-act', 'in-vt-set', 'in-autopeep', 'in-hr', 'in-sbp', 'in-cuff'];
     var values = {};
     ids.forEach(function (id) { values[id] = num(id) === null ? '' : $(id).value; });
     return values;
@@ -829,6 +850,18 @@
     if (vtAct !== null && vtSet !== null && vtAct < vtSet * 0.9) {
       out.push(['alert-amber', 'VT đo <90% VT cài: kiểm tra rò, tắc, cuff.']);
     }
+    var fio2Act = num('in-fio2-actual');
+    if (spo2 !== null && fio2Act !== null && fio2Act > 60 && spo2 >= oxygen.min) {
+      out.push(['alert-amber', 'SpO₂ đạt/vượt đích với FiO₂ ' + fio2Act + '%: cân nhắc giảm dần FiO₂ về ≤60% để tránh ngộ độc oxy.']);
+    }
+    var cuff = num('in-cuff');
+    if (cuff !== null) {
+      if (cuff < 20) {
+        out.push(['alert-amber', 'Áp lực cuff < 20 cmH₂O: nguy cơ rò khí, hít sặc (bơm thêm đến 20–30 cmH₂O).']);
+      } else if (cuff > 30) {
+        out.push(['alert-amber', 'Áp lực cuff > 30 cmH₂O: nguy cơ tổn thương niêm mạc khí quản (xả bớt về 20–30 cmH₂O).']);
+      }
+    }
     return out;
   }
 
@@ -869,7 +902,8 @@
         '; VT đo ' + val('in-vt-act', ' mL') + measuredAt('in-vt-act') +
         '; auto-PEEP ' + val('in-autopeep', ' cmH₂O') + measuredAt('in-autopeep') +
         '; nhịp tim ' + val('in-hr', '/phút') + measuredAt('in-hr') +
-        '; HA tâm thu ' + val('in-sbp', ' mmHg') + measuredAt('in-sbp') + '.',
+        '; HA tâm thu ' + val('in-sbp', ' mmHg') + measuredAt('in-sbp') +
+        (num('in-cuff') !== null ? '; Cuff ' + val('in-cuff', ' cmH₂O') + measuredAt('in-cuff') : '') + '.',
       alertsTxt,
       '',
       'R: Hồi sức ' + specTxt + '; gọi ' + (state.calledAt !== null ? clock(state.calledAt) : 'chưa ghi') + '.',
@@ -913,6 +947,24 @@
     $('driving-value').textContent = pplat !== null && totalPeep !== null && pplat >= totalPeep
       ? 'ΔP ' + (pplat - totalPeep) + ' cmH₂O (Pplat − total PEEP).'
       : 'ΔP: cần Pplat ≥ total PEEP.';
+    var vtAct = num('in-vt-act'), vtSet = num('in-vt-set');
+    var vtVal = vtAct !== null ? vtAct : vtSet;
+    if (pplat !== null && totalPeep !== null && pplat > totalPeep && vtVal !== null) {
+      var dp = pplat - totalPeep;
+      var cstat = Math.round(vtVal / dp);
+      var cstatNote = cstat < 30 ? ' (phổi cứng, gợi ý giảm độ giãn nở nặng/ARDS)' : (cstat < 50 ? ' (độ giãn nở giảm nhẹ–vừa)' : ' (độ giãn nở bình thường)');
+      $('cstat-value').textContent = 'Cstat ' + cstat + ' mL/cmH₂O' + cstatNote + '.';
+    } else {
+      $('cstat-value').textContent = 'Cstat: cần Pplat > total PEEP và thể tích VT.';
+    }
+    var cfg = currentSettings();
+    if (cfg && cfg.rr && vtVal !== null) {
+      var ve = ((vtVal * cfg.rr) / 1000).toFixed(1);
+      var veNote = Number(ve) < 5 ? ' (nguy cơ giảm thông khí/ứ CO₂)' : (Number(ve) > 12 ? ' (tăng thông khí)' : ' (thông khí cơ bản ổn định)');
+      $('ve-value').textContent = 'VE ' + ve + ' L/phút (' + cfg.rr + ' lần × ' + vtVal + ' mL)' + veNote + '.';
+    } else {
+      $('ve-value').textContent = 'VE: cần VT và tần số thở để tính.';
+    }
     updateStatus();
   }
 
@@ -1086,7 +1138,7 @@
     });
   });
 
-  ['in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep'].forEach(function (id) {
+  ['in-vt-act', 'in-vt-set', 'in-peep-act', 'in-spo2', 'in-pao2', 'in-fio2-actual', 'in-ppeak', 'in-pplat', 'in-hr', 'in-sbp', 'in-autopeep', 'in-cuff'].forEach(function (id) {
     $(id).addEventListener('input', function () {
       if (!state.measurementAt) state.measurementAt = {};
       if (num(id) === null) delete state.measurementAt[id];

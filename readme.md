@@ -83,7 +83,7 @@ Sau khi tạo các tệp này, nhớ tăng `CACHE_VERSION` trong `sw.js` (xem m�
 
 1. Mở ứng dụng trên trình duyệt máy tính bằng HTTPS.
 2. Mở DevTools (F12) → tab **Application** → **Service Workers**. Xác nhận trạng thái là `activated and is running`.
-3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.8` chứa `index.html` và `manifest.json`.
+3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.9` chứa `index.html` và `manifest.json`.
 4. Bật chế độ **Offline** trong DevTools (tab Network), tải lại trang. Ứng dụng phải vẫn mở và tính toán được.
 5. Cài lên màn hình chính trên iOS và Android, rồi làm lại bước 4 trên thiết bị thật.
 
