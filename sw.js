@@ -7,7 +7,7 @@
  */
 
 const CACHE_PREFIX = 'vent-assist-';
-const CACHE_VERSION = 'v1.5.0';
+const CACHE_VERSION = 'v1.5.1';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 
 const REQUIRED_ASSETS = ['./index.html', './manifest.json', './profiles.js'];

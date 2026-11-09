@@ -20,6 +20,11 @@
 - [ ] Đánh dấu bác sĩ chuyên ngành đã đến; timer dừng.
 - [ ] Dòng thời gian có giờ nối máy và giờ chuyên ngành đến.
 - [ ] SBAR không chứa họ tên hoặc mã bệnh án.
+- [ ] SBAR phân biệt đề xuất của ứng dụng với VT/PEEP/FiO₂ nhập từ máy; không gọi đề xuất là cài đặt hiện tại.
+- [ ] P/F chỉ tính khi có PaO₂ và FiO₂ trên máy lúc lấy khí máu.
+- [ ] Profile COPD bản nháp hiển thị rõ cảnh báo vẫn dùng mục tiêu khởi đầu 92–96%.
+- [ ] Snapshot không lưu số nhập sai hoặc tính xu hướng từ số sai.
+- [ ] Đồng hồ không thể bắt đầu lại độc lập với giờ nối máy.
 - [ ] Nút xóa phiên xóa input, checklist, timer và dòng thời gian.
 
 ## 3. Responsive và accessibility
@@ -40,7 +45,7 @@
 - [ ] Tải ứng dụng một lần khi online.
 - [ ] Bật Offline rồi tải lại.
 - [ ] PBW, cảnh báo, timer và SBAR vẫn hoạt động.
-- [ ] Xác nhận cache là `vent-assist-v1.5.0`.
+- [ ] Xác nhận cache là `vent-assist-v1.5.1`.
 - [ ] Sau khi tăng version, bản mới xuất hiện sau reload.
 - [ ] Không có request 404 trong app shell.
 

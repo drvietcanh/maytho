@@ -157,3 +157,12 @@
 - Sửa câu cảnh báo Pplat cao để không tạo ấn tượng phải giữ nguyên cài đặt; chuyển thành yêu cầu gọi Hồi sức đánh giá và không tự nâng Pmax.
 - Smoke test thật đạt: P/F, driving pressure và responsive 360/390/768/1024/1440 không tràn ngang.
 - `npm test`: 4/4 đạt; `npm run build`: đạt.
+## 09/11/2026 — Khắc phục điểm chặn nghiệm thu 1.5.1
+
+- SBAR tách đề xuất ứng dụng khỏi VT, PEEP và FiO₂ nhập từ máy, kèm giờ nhập; so sánh VT chỉ dùng VT cài thực tế.
+- P/F chỉ tính từ FiO₂ trên máy lúc lấy khí máu. Profile bản nháp không hiển thị ngưỡng riêng như mục tiêu đang áp dụng.
+- Đồng hồ 30 phút luôn tính từ mốc nối máy, không còn nút khởi động/đặt lại độc lập. Hiệu chỉnh mốc cần lý do và ghi dòng thời gian; sửa trạng thái chuyên ngành đến sẽ tiếp tục từ mốc ban đầu.
+- Snapshot loại giá trị không hợp lệ và không lưu mốc hoàn toàn rỗng; chỉ báo chất lượng dữ liệu kiểm tra giá trị hợp lệ; cảnh báo đỏ hiển thị trong thanh trạng thái cố định ngay cả khi chưa chọn giới tính. Modal khóa tương tác nền khi mở.
+- Giao diện và README nói rõ dữ liệu phiên lưu tạm trong tab. Khóa phiên chuyển sang v2 và xóa bản v1 khi mở để tránh dùng lại snapshot cũ.
+- `npm test`: 4/4 đạt; `npm run build`: đạt; `git diff --check`: đạt. Smoke test Chromium: số nhập sai, P/F, SBAR, profile bản nháp, đồng hồ sau reload, cảnh báo ở màn hình 390 px, không tràn ngang.
+- Còn cần hội đồng bệnh viện đối chiếu Operator's Manual, ký duyệt SOP và diễn tập trên thiết bị thật trước pilot.

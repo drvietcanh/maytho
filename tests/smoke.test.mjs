@@ -8,10 +8,11 @@ const profiles = await readFile(new URL('../profiles.js', import.meta.url), 'utf
 const manifest = JSON.parse(await readFile(new URL('../manifest.json', import.meta.url), 'utf8'));
 
 test('app shell has required clinical workflow controls', () => {
-  for (const marker of ['in-spo2', 'in-pplat', 'in-autopeep', 'sbar', 'clear-session', 'timeline']) {
+  for (const marker of ['in-spo2', 'in-pplat', 'in-autopeep', 'in-vt-set', 'in-fio2-actual', 'urgent-summary', 'sbar', 'clear-session', 'timeline']) {
     assert.match(html, new RegExp(`id="${marker}"`));
   }
   assert.match(html, /clinical-profile/);
+  assert.doesNotMatch(html, /id="timer-start"|id="timer-reset"/);
 });
 
 test('PBW Devine reference values remain stable', () => {
@@ -27,7 +28,7 @@ test('invalid numeric input is excluded by browser validity gate', () => {
 });
 
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.0'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.1'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);

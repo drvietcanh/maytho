@@ -1,6 +1,6 @@
 ﻿# Hỗ Trợ Cài Đặt Máy Thở Cấp Cứu (Emergency Vent Assist)
 
-Công cụ tham khảo thông số khởi đầu cho máy thở TECME Neumovent TS trong cấp cứu và hồi sức tích cực. Ứng dụng là Progressive Web App (PWA), chạy hoàn toàn trên trình duyệt, không có máy chủ và không lưu dữ liệu bệnh nhân.
+Công cụ tham khảo thông số khởi đầu cho máy thở TECME Neumovent TS trong cấp cứu và hồi sức tích cực. Ứng dụng là Progressive Web App (PWA), chạy hoàn toàn trên trình duyệt, không có máy chủ. Dữ liệu phiên được giữ tạm trong `sessionStorage` của tab để khôi phục sau tải lại; bản lưu không được khôi phục nếu lần lưu cuối đã quá 2 giờ. Cần xóa phiên trên thiết bị dùng chung.
 
 > **Cảnh báo:** Đây là công cụ tham khảo, không phải thiết bị y tế đã được thẩm định. Mọi thông số phải đối chiếu với hướng dẫn sử dụng của máy (Operator's Manual) và phác đồ của đơn vị trước khi áp dụng. Không dùng ứng dụng này để thay thế phán đoán lâm sàng.
 
@@ -83,7 +83,7 @@ Sau khi tạo các tệp này, nhớ tăng `CACHE_VERSION` trong `sw.js` (xem m�
 
 1. Mở ứng dụng trên trình duyệt máy tính bằng HTTPS.
 2. Mở DevTools (F12) → tab **Application** → **Service Workers**. Xác nhận trạng thái là `activated and is running`.
-3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.0` chứa `index.html` và `manifest.json`.
+3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.1` chứa `index.html` và `manifest.json`.
 4. Bật chế độ **Offline** trong DevTools (tab Network), tải lại trang. Ứng dụng phải vẫn mở và tính toán được.
 5. Cài lên màn hình chính trên iOS và Android, rồi làm lại bước 4 trên thiết bị thật.
 
@@ -96,7 +96,7 @@ Chi tiết đầy đủ nằm trong `TEST_CHECKLIST.md`.
 Service Worker dùng chiến lược Cache-First, nên khi sửa bất kỳ tệp nào, người dùng sẽ tiếp tục thấy bản cũ cho đến khi cache được thay thế. Quy trình bắt buộc:
 
 1. Sửa tệp cần thay đổi (ví dụ `index.html`).
-2. Mở `sw.js`, đổi `CACHE_VERSION`, ví dụ từ `'v1.5.0'` thành `'v1.5.1'`.
+2. Mở `sw.js`, đổi `CACHE_VERSION`, ví dụ từ `'v1.5.1'` thành `'v1.5.2'`.
 3. Đồng bộ số phiên bản trong `index.html` (dòng chú thích phía trên thẻ `<style>`) và trong chân trang.
 4. Triển khai lên host.
 
