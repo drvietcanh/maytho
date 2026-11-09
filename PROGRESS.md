@@ -172,3 +172,18 @@
 - Theo xác nhận của người dùng rằng bác sĩ Hồi sức đã phê duyệt, bỏ chữ “bản nháp” khỏi tên profile, phần mô tả và SBAR trên web.
 - SBAR hiển thị ngưỡng SpO₂ đang thực sự áp dụng. Không đổi ngưỡng cảnh báo hoặc cài đặt máy trong lần sửa nhãn này; trạng thái phê duyệt trong ma trận chờ cập nhật hồ sơ cụ thể.
 - Tăng phiên bản PWA để bản cache cũ được thay thế.
+## 09/11/2026 — Rút gọn ngôn ngữ lâm sàng 1.5.3
+
+- Rút gọn banner, nhãn nhập liệu, checklist, cảnh báo, trạng thái, đồng hồ, SBAR và ghi chú máy cho bác sĩ sau đại học.
+- Thanh trạng thái gộp ba điều kiện cảnh báo đỏ thành một dòng ngắn; chi tiết vẫn ở bước Sau nối.
+- Bỏ thông báo Pplat bình thường không yêu cầu hành động. Giữ nguyên ngưỡng, công thức, điều kiện cảnh báo bất thường và hành vi máy.
+- Đối chiếu lại nội dung VT/Pplat với ATS/ESICM/SCCM ARDS guideline 2017; không thay đổi khuyến nghị điều trị.
+- `npm test`, build, `git diff --check` và smoke test Chromium 360/390/768/1024 px.
+
+## 09/11/2026 — Hiện đại hóa giao diện 1.5.3
+
+- Áp dụng hướng “buồng hồi sức”: xanh than, bề mặt phẳng, viền rõ; cyan cho điều hướng, xanh lục cho hành động, đỏ/hổ phách dành cho cảnh báo.
+- Tối ưu mật độ: số đo hai cột trên màn hình rộng, một cột trên điện thoại; thông số đề xuất ba cột trên desktop, hai cột trên mobile.
+- Thêm skip link, main landmark, focus rõ, reduced motion, trạng thái lỗi không phụ thuộc màu và nút xóa phiên mang kiểu cảnh báo.
+- Ghi quyết định thiết kế tại `.21st/design.json`; không thêm dependency để giữ PWA ngoại tuyến gọn.
+- Smoke test Chromium: 320/360/390/768/1024/1440 px, 200% chữ, text spacing, bàn phím, tên control, lỗi input, cảnh báo đỏ, tab và modal. Chưa kiểm thử screen reader/AT thực tế.

@@ -28,7 +28,7 @@ test('invalid numeric input is excluded by browser validity gate', () => {
 });
 
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.2'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.3'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);

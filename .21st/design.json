@@ -1,0 +1,11 @@
+{
+  "product": "Emergency Vent Assist",
+  "audience": "Bác sĩ sau đại học tại Cấp cứu và Hồi sức",
+  "direction": "Buồng hồi sức: tối, phẳng, tương phản cao, ưu tiên thao tác nhanh",
+  "decisions": [
+    "Dùng xanh than cho nền, cyan cho điều hướng, xanh lục cho hành động hoàn tất; hổ phách và đỏ chỉ cho cảnh báo.",
+    "Giữ luồng một cột trên điện thoại; dùng lưới hai cột cho số đo và ba cột cho thông số đề xuất trên màn hình rộng.",
+    "Không dùng chuyển động trang trí; trạng thái phải có chữ và không chỉ dựa vào màu.",
+    "Vùng chạm tối thiểu theo mục tiêu sản phẩm là 44 px cho hành động chính và 30 px cho checkbox lâm sàng."
+  ]
+}
