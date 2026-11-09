@@ -83,7 +83,7 @@ Sau khi tạo các tệp này, nhớ tăng `CACHE_VERSION` trong `sw.js` (xem m�
 
 1. Mở ứng dụng trên trình duyệt máy tính bằng HTTPS.
 2. Mở DevTools (F12) → tab **Application** → **Service Workers**. Xác nhận trạng thái là `activated and is running`.
-3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.1` chứa `index.html` và `manifest.json`.
+3. Mở **Application** → **Cache Storage**. Xác nhận có cache tên `vent-assist-v1.5.2` chứa `index.html` và `manifest.json`.
 4. Bật chế độ **Offline** trong DevTools (tab Network), tải lại trang. Ứng dụng phải vẫn mở và tính toán được.
 5. Cài lên màn hình chính trên iOS và Android, rồi làm lại bước 4 trên thiết bị thật.
 
@@ -96,7 +96,7 @@ Chi tiết đầy đủ nằm trong `TEST_CHECKLIST.md`.
 Service Worker dùng chiến lược Cache-First, nên khi sửa bất kỳ tệp nào, người dùng sẽ tiếp tục thấy bản cũ cho đến khi cache được thay thế. Quy trình bắt buộc:
 
 1. Sửa tệp cần thay đổi (ví dụ `index.html`).
-2. Mở `sw.js`, đổi `CACHE_VERSION`, ví dụ từ `'v1.5.1'` thành `'v1.5.2'`.
+2. Mở `sw.js`, đổi `CACHE_VERSION`, ví dụ từ `'v1.5.2'` thành `'v1.5.3'`.
 3. Đồng bộ số phiên bản trong `index.html` (dòng chú thích phía trên thẻ `<style>`) và trong chân trang.
 4. Triển khai lên host.
 

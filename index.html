@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Cài Đặt Ban Đầu Máy Thở Cấp Cứu</title>
 <style>
-  /* Phiên bản 1.5.1. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
+  /* Phiên bản 1.5.2. Khi sửa tệp này, nhớ tăng CACHE_VERSION trong sw.js. */
   :root {
     --bg: #0f172a; --panel: #1e293b; --panel-2: #0b1220; --line: #475569;
     --text: #f8fafc; --muted: #cbd5e1; --blue: #0284c7; --blue-light: #38bdf8;
@@ -209,7 +209,7 @@
       <label class="lbl" for="clinical-profile">Chọn profile để xem mục tiêu theo dõi</label>
       <select id="clinical-profile"></select>
       <div id="profile-summary" class="detail" aria-live="polite"></div>
-      <p class="muted small">Profile chỉ hiển thị mục tiêu và điểm cần đánh giá; không tự thay đổi thông số máy. Profile “bản nháp” chưa được bật thành protocol điều trị.</p>
+      <p class="muted small">Profile chỉ hiển thị điểm cần đánh giá; không tự thay đổi thông số máy. Ngưỡng cảnh báo đang áp dụng được ghi trong phần cài đặt khởi đầu.</p>
     </section>
 
     <section class="card" aria-labelledby="h-mode">
@@ -398,7 +398,7 @@
   </div>
 
   <footer>
-    <p>Phiên bản 1.5.1 · Chỉ người lớn · Dữ liệu nhập được giữ tạm trong tab để khôi phục phiên · Hoạt động ngoại tuyến sau lần tải đầu.</p>
+    <p>Phiên bản 1.5.2 · Chỉ người lớn · Dữ liệu nhập được giữ tạm trong tab để khôi phục phiên · Hoạt động ngoại tuyến sau lần tải đầu.</p>
     <button type="button" id="clear-session" class="btn-small">Xóa dữ liệu phiên này</button>
     <p id="session-msg" class="muted small" aria-live="polite"></p>
   </footer>
@@ -519,7 +519,7 @@
     (window.VENT_PROFILES || []).forEach(function (profile) {
       var option = document.createElement('option');
       option.value = profile.id;
-      option.textContent = profile.name + (profile.status === 'draft' ? ' · BẢN NHÁP' : '');
+      option.textContent = profile.name;
       select.appendChild(option);
     });
     select.value = state.profile || 'baseline';
@@ -530,7 +530,7 @@
     if (!profile) return;
     $('clinical-profile').value = profile.id;
     $('profile-summary').innerHTML = profile.status === 'draft'
-      ? '<strong>BẢN NHÁP — chưa áp dụng mục tiêu riêng. Cảnh báo vẫn dùng mục tiêu khởi đầu 92–96%.</strong><br><span class="muted">' + profile.note + ' Nguồn tham khảo: ' + profile.source + '.</span>'
+      ? '<strong>Cảnh báo đang dùng mục tiêu khởi đầu 92–96%.</strong><br><span class="muted">' + profile.note + ' Nguồn tham khảo: ' + profile.source + '.</span>'
       : '<strong>' + profile.target + '</strong><br>' + profile.settings + '<br><span class="muted">' + profile.note + ' Nguồn: ' + profile.source + '.</span>';
   }
   function recordEvent(label) {
@@ -818,7 +818,7 @@
         (state.intubatedAt !== null ? clock(state.intubatedAt) : '(chưa ghi giờ)') + '.',
       '',
       'B: ' + sexTxt() + ', cao ' + state.height + ' cm (' + srcTxt() + '), PBW ' + w.toFixed(1) + ' kg.',
-      '   Profile theo dõi: ' + (profile ? profile.name : 'chưa chọn') + ' · trạng thái ' + (profile ? profile.status : 'unknown') + '.',
+      '   Profile theo dõi: ' + (profile ? profile.name : 'chưa chọn') + '. Ngưỡng SpO₂ cảnh báo đang áp dụng: ' + oxygenTarget().min + '–' + oxygenTarget().max + '%.',
        '   Đề xuất của ứng dụng (chưa xác nhận trên máy): VT ' + vt + ' mL (' + cfg.vtMlKg + ' mL/kg PBW), f ' + cfg.rr +
         ', PEEP ' + cfg.peep + ', FiO₂ ' + cfg.fio2 + '%, I:E 1:' + cfg.ie + ', Pmax ' + cfg.pmax + '. Mode ' + (state.mode === 'expert' ? 'Hồi sức chuyên sâu' : 'Trực cấp cứu') + '.',
        '   Đã nhập từ máy: VT cài ' + val('in-vt-set', ' mL') + measuredAt('in-vt-set') + '; PEEP cài ' + val('in-peep-act', ' cmH₂O') + measuredAt('in-peep-act') + '; FiO₂ lúc khí máu ' + val('in-fio2-actual', '%') + measuredAt('in-fio2-actual') + '.',

@@ -28,10 +28,12 @@ test('invalid numeric input is excluded by browser validity gate', () => {
 });
 
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.1'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.2'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);
   assert.match(profiles, /id: 'copd'/);
   assert.match(profiles, /spo2Min: 88, spo2Max: 92/);
+  assert.doesNotMatch(profiles, /name: '[^']*bản nháp/i);
+  assert.doesNotMatch(html, /BẢN NHÁP|Profile “bản nháp”/);
 });

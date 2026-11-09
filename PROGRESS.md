@@ -166,3 +166,9 @@
 - Giao diện và README nói rõ dữ liệu phiên lưu tạm trong tab. Khóa phiên chuyển sang v2 và xóa bản v1 khi mở để tránh dùng lại snapshot cũ.
 - `npm test`: 4/4 đạt; `npm run build`: đạt; `git diff --check`: đạt. Smoke test Chromium: số nhập sai, P/F, SBAR, profile bản nháp, đồng hồ sau reload, cảnh báo ở màn hình 390 px, không tràn ngang.
 - Còn cần hội đồng bệnh viện đối chiếu Operator's Manual, ký duyệt SOP và diễn tập trên thiết bị thật trước pilot.
+
+## 09/11/2026 — Nhãn profile trên giao diện 1.5.2
+
+- Theo xác nhận của người dùng rằng bác sĩ Hồi sức đã phê duyệt, bỏ chữ “bản nháp” khỏi tên profile, phần mô tả và SBAR trên web.
+- SBAR hiển thị ngưỡng SpO₂ đang thực sự áp dụng. Không đổi ngưỡng cảnh báo hoặc cài đặt máy trong lần sửa nhãn này; trạng thái phê duyệt trong ma trận chờ cập nhật hồ sơ cụ thể.
+- Tăng phiên bản PWA để bản cache cũ được thay thế.
