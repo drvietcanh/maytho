@@ -187,3 +187,11 @@
 - Thêm skip link, main landmark, focus rõ, reduced motion, trạng thái lỗi không phụ thuộc màu và nút xóa phiên mang kiểu cảnh báo.
 - Ghi quyết định thiết kế tại `.21st/design.json`; không thêm dependency để giữ PWA ngoại tuyến gọn.
 - Smoke test Chromium: 320/360/390/768/1024/1440 px, 200% chữ, text spacing, bàn phím, tên control, lỗi input, cảnh báo đỏ, tab và modal. Chưa kiểm thử screen reader/AT thực tế.
+
+## 09/11/2026 — Gỡ banner đầu trang 1.5.4
+
+- Bỏ khối tên đơn vị và mô tả phạm vi sử dụng ở đầu trang theo yêu cầu.
+- Xóa CSS và chú thích không còn dùng; rút footer còn thông tin phiên bản, lưu tạm và offline.
+- Tăng phiên bản cache để PWA đã cài nhận giao diện mới.
+- Rà soát phát hành: không có lỗi console, ID trùng hoặc overflow tại 320/360/390/768/1024/1440 px; PBW, P/F, cảnh báo, bàn phím, modal và offline đạt.
+- Thêm smoke test ngăn banner và tên đơn vị xuất hiện lại. `21st review` không khả dụng trong môi trường; chưa kiểm thử screen reader/AT thực tế.

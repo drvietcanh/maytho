@@ -13,6 +13,7 @@ test('app shell has required clinical workflow controls', () => {
   }
   assert.match(html, /clinical-profile/);
   assert.doesNotMatch(html, /id="timer-start"|id="timer-reset"/);
+  assert.doesNotMatch(html, /class="banner"|Đề xuất Khoa Cấp cứu|BV Quân y 13/);
 });
 
 test('PBW Devine reference values remain stable', () => {
@@ -28,7 +29,7 @@ test('invalid numeric input is excluded by browser validity gate', () => {
 });
 
 test('PWA cache and manifest are versioned and complete', () => {
-  assert.match(sw, /CACHE_VERSION = 'v1\.5\.3'/);
+  assert.match(sw, /CACHE_VERSION = 'v1\.5\.4'/);
   assert.equal(manifest.start_url, './index.html');
   assert.equal(manifest.icons[0].src, 'icon.svg');
   assert.match(sw, /profiles\.js/);

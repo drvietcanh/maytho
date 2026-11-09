@@ -45,7 +45,7 @@
 - [ ] Tải ứng dụng một lần khi online.
 - [ ] Bật Offline rồi tải lại.
 - [ ] PBW, cảnh báo, timer và SBAR vẫn hoạt động.
-- [ ] Xác nhận cache là `vent-assist-v1.5.3`.
+- [ ] Xác nhận cache là `vent-assist-v1.5.4`.
 - [ ] Sau khi tăng version, bản mới xuất hiện sau reload.
 - [ ] Không có request 404 trong app shell.
 
